@@ -1,0 +1,144 @@
+body {
+    background-color: #444;
+    font-family: sans-serif;
+}
+
+h1, h4 {
+    margin: 0 0 20px 0;
+    color: white;
+    text-shadow: 2px 1px 5px #888;
+}
+
+#button {
+    padding: 10px 20px;
+    font-size: 20px;
+    margin: 5px 0;
+    flex-shrink: 0;
+    border-radius: 20px;
+    background-color: white;
+    font-weight: bold;
+    border: none;
+}
+
+#wrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#left {
+    flex: 1;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+}
+
+.text-container {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#text {
+    flex: 1;
+    height: 100%;
+    background-color: white;
+    display: block;
+    width: 100%;
+}
+
+#text > .CodeMirror {
+    height: 100%!important;
+}
+
+#state-container {
+    display: flex;
+    flex-direction: row;
+}
+
+#state-left {
+    flex: 1;
+    flex-basis: fill;
+}
+
+#state-right {
+    flex: 1;
+    flex-basis: fill;
+}
+
+#state {
+    height: 200px;
+}
+
+#state > .CodeMirror {
+    height: 200px!important;
+}
+
+#current-state {
+    height: 200px;
+    white-space: pre;
+    background-color: #555;
+    font-family: monospace;
+    color: white;
+    overflow: auto;
+    letter-spacing: 1px;
+    line-height: 1.5;
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+
+#right {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+#output {
+    display: block;
+    align-self: center;
+}
+
+#log {
+    padding: 10px;
+    background-color: #aaa;
+    overflow: auto;
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+#repl {
+    flex: 1;
+    display: flex;
+}
+
+#repl .CodeMirror {
+    height: auto;
+}
+
+.small-title {
+    color: white;
+    font-weight: bold;
+}
+
+#container {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#container .CodeMirror {
+    height: auto;
+}
