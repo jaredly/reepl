@@ -14,7 +14,8 @@
             [replumb.doc-maps :as docs]
             [cljs.repl :as repl]
 
-            [quil.middleware :as m]))
+            [quil.middleware :as m])
+  (:import goog.net.XhrIo))
 
 (def styles
   {
@@ -52,10 +53,25 @@
               val)]
     (js/console.log val)))
 
+(defn fetch-file!
+  "Very simple implementation of XMLHttpRequests that given a file path
+  calls src-cb with the string fetched of nil in case of error.
+  See doc at https://developers.google.com/closure/library/docs/xhrio"
+  [file-url src-cb]
+  (try
+    (.send XhrIo file-url
+           (fn [e]
+             (if (.isSuccess (.-target e))
+               (src-cb (.. e -target getResponseText))
+               (src-cb nil))))
+    (catch :default e
+      (src-cb nil))))
+
 (def replumb-opts
   (merge (replumb/browser-options
-          ["/src/reepl" "/target/out"]
-          (fn [& args]
+          ["/main.out" "/main.out"]
+          fetch-file!
+          #_(fn [& args]
             (debug "replumb load noop" args))
           #_io/fetch-file!)
          ;; TODO figure out file loading
@@ -86,9 +102,8 @@
     :default (compare ns1 ns2)))
 
 ;; TODO sort by position of matching
-;; TODO auto-remove qualifiers that aren't necessary
 ;; TODO auto-replace quil.core/ w/ q/ for example
-;; TODO show docs in autocomplete?
+;; TODO fuzzy-match if there are no normal matches
 (defn process-apropos
   [text]
   (let [matches? #(< -1 (.indexOf (str %) text))
@@ -110,23 +125,31 @@
                   ;; [qualified symbol, show text, replace text]
                   (map #(-> [% (str %) (replace-name %)]))
                   (sort-by second (partial compare-completion starts-with)))]
-    (vec defs)))
+    (vec (take 50 defs))))
 
 (defn process-doc
   [sym]
-  (with-out-str
-    (cond
-      (docs/special-doc-map sym) (repl/print-doc (docs/special-doc sym))
-      (docs/repl-special-doc-map sym) (repl/print-doc (docs/repl-special-doc sym))
-      (ast/namespace @replumb.repl/st sym) (repl/print-doc (select-keys (ast/namespace @replumb.repl/st sym) [:name :doc]))
-      :else (repl/print-doc (replumb.repl/get-var opts (replumb.repl/empty-analyzer-env) sym)))))
+  (when sym
+    (with-out-str
+      (cond
+        (docs/special-doc-map sym) (repl/print-doc (docs/special-doc sym))
+        (docs/repl-special-doc-map sym) (repl/print-doc (docs/repl-special-doc sym))
+        (ast/namespace @replumb.repl/st sym)
+        (repl/print-doc
+         (select-keys
+          (ast/namespace @replumb.repl/st sym)
+          [:name :doc]))
+        :else (repl/print-doc
+               (replumb.repl/get-var
+                nil
+                (replumb.repl/empty-analyzer-env) sym))))))
 
 (devtools/install!)
 
-(swap! jsc/*loaded* conj 'quil.core)
+;; (swap! jsc/*loaded* conj 'quil.core)
 
 (defn complete-word [text]
-  (when (>= (count text) 2)
+  (when (>= (count text) 1)
     (process-apropos text)))
 
 (defn main []

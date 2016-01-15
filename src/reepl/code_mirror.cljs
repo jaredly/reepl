@@ -25,7 +25,9 @@
     (when-not (empty? words)
       {:list words
        :num (count words)
-       :active false
+       :active (= (get (first words) 2) text)
+       :show-all false
+       :initial-text text
        :pos 0
        :from (.-anchor range)
        :to (.-head range)})))
@@ -50,23 +52,25 @@
 (defn cycle-pos [count current go-back?]
   (if go-back?
     (if (>= 0 current)
-      (dec count)
-      (dec current))
+      [false 0]
+      [true (dec current)])
     (if (>= current (dec count))
-      0
-      (inc current))))
+      [false 0]
+      [true (inc current)])))
 
-(defn cycle-completions [{:keys [num pos active from to list] :as state}
+(defn cycle-completions [{:keys [num pos active from to list initial-text] :as state}
                          go-back? cm]
   (when state
-    (let [pos (if active
-                (cycle-pos num pos go-back?)
-                pos)
-          text (get (get list pos) 2)]
+    (let [[active pos] (if active
+                         (cycle-pos num pos go-back?)
+                         [true (if go-back? (dec num) pos)])
+          text (if active
+                 (get (get list pos) 2)
+                 initial-text)]
       (.replaceRange cm text from to)
       (assoc state
              :pos pos
-             :active true
+             :active active
              :to #js {:line (.-line from)
                       :ch (+ (count text)
                              (.-ch from))})
@@ -89,8 +93,10 @@
      {:component-did-mount
       (fn [this]
         (let [el (r/dom-node this)
+              ;; On Escape, should we revert to the pre-completion-text?
               cancel-keys #{37 38 39 40 13 27}
               cmp-ignore #{9 16 17 18 91 93}
+              cmp-show #{17 18 91 93}
               inst (js/CodeMirror.
                     el
                     #js {:lineNumbers false
@@ -114,14 +120,18 @@
                (fn [inst evt]
                  (if (cancel-keys (.-keyCode evt))
                    (reset! complete-atom nil)
-                   (when-not (cmp-ignore (.-keyCode evt))
-                     (reset! complete-atom (repl-hint complete-word inst nil))
-                     ))
+                   (if (cmp-show (.-keyCode evt))
+                     (swap! complete-atom assoc :show-all false)
+                     (when-not (cmp-ignore (.-keyCode evt))
+                       (reset! complete-atom (repl-hint complete-word inst nil))
+                       )))
                  ))
 
           (.on inst "keydown"
                (fn [inst evt]
                  (case (.-keyCode evt)
+                   (17 18 91 93)
+                   (swap! complete-atom assoc :show-all true)
                    ;; tab
                    9 (do
                        ;; TODO: do I ever want to use TAB normally?

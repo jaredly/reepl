@@ -11,6 +11,7 @@
 
 (def styles
   {:value-head {:flex-direction :row}
+   :inline-value {:display :inline-flex}
    :value-toggle {
                   :font-size 9
                   :padding 4
@@ -26,10 +27,26 @@
 (defn pprint-str [val]
   (pprint/write val :stream nil))
 
+(defn show-fn [fn]
+  (let [parts (.split (.-name fn) \$)]
+    (->
+     (str
+      (str/join \. (butlast parts))
+      \/
+      (last parts))
+     (.replace
+      "__GT_"
+      "->")
+     (.replace
+      "_"
+      "-"))))
+
 (defn show-str [val]
-  (if (str? val)
-    val
-    (pprint-str val)))
+  (if (= js/Function (type val))
+    (show-fn val)
+    (if (str? val)
+      val
+      (pprint-str val))))
 
 (declare show-value)
 
@@ -56,12 +73,12 @@
 ;; see https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview
 (defn show-value [val config]
   (if (var? val)
-    [view nil (show-str val)]
+    [view :inline-value (show-str val)]
     (let [header (devtools/header-api-call val config)]
     (if-not header
-      [view nil (show-str val)]
+      [view :inline-value (show-str val)]
       (if-not (devtools/has-body-api-call val config)
-        [view nil (show-el header)]
+        [view :inline-value (show-el header)]
         (let [open (r/atom false)]
           (fn [_ _]
             (let [is-open @open]

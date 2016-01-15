@@ -22,9 +22,38 @@
                :background-color "white"
                :display :flex
                :white-space "pre-wrap"}
+
+   :intro-message {:padding "10px 20px"
+                   :line-height 1.5}
+
+   :completion-container {:position :relative
+                          :font-size 12}
+   :completion-list {:flex-direction :row
+                     :overflow :hidden
+                     :height 20}
+   :completion-empty {:color "#ccc"
+                      ;;:font-weight :bold
+                      :padding "3px 10px"}
+
+   :completion-show-all {:position :absolute
+                         :top 0
+                         :left 0
+                         :right 0
+                         :z-index 1000
+                         :flex-direction :row
+                         :background-color "#eef"
+                         :flex-wrap :wrap}
+   :completion-item {:padding "3px 5px 3px"}
+   :completion-selected {:background-color "#eee"}
+   :completion-active {:background-color "#aaa"}
+
    :docs {:height 200
           :overflow :auto
+          :padding "5px 10px"
           }
+   :docs-empty {:color "#ccc"
+                :padding "5px 10px"}
+
    :repl-items {:flex 1
                 :overflow :auto
                 :height 500
@@ -58,6 +87,11 @@
 (def view (partial helpers/view styles))
 (def text (partial helpers/text styles))
 (def button (partial helpers/button styles))
+
+(def intro-message
+  [view :intro-message
+   "Welcome to Reepl! The Read-eval-print-loop that really understands you, that you can get along with.
+  Type :cljs/clear to clear the history, ... ???"])
 
 (defmulti repl-item :type)
 
@@ -97,8 +131,52 @@
     :reagent-render
     (fn [items]
       (into
-       [view :repl-items]
+       [view :repl-items
+        intro-message]
        (map repl-item items)))}))
+
+(def canScrollIfNeeded
+  (not (nil? (.scrollIntoViewIfNeeded js/document.body))))
+
+(defn completion-item [text is-selected is-active set-active]
+  (r/create-class
+   {:component-did-update
+    (fn [this [_ _ old-is-selected]]
+      (let [[_ _ is-selected] (r/argv this)]
+        (if (and (not old-is-selected)
+                 is-selected)
+          ;; (js/console.log "selecting" text is-selected old-is-selected)
+          (if canScrollIfNeeded
+            (.scrollIntoViewIfNeeded (r/dom-node this) false)
+            (.scrollIntoView (r/dom-node this))))))
+    :reagent-render
+    (fn [text is-selected is-active set-active]
+      [view {:on-click set-active
+             :style [:completion-item
+                     (and is-selected
+                          (if is-active
+                            :completion-active
+                            :completion-selected))]}
+       text])}))
+
+(defn completion-list [{:keys [pos list active show-all]} set-active]
+  (let [items (map-indexed
+               #(-> [completion-item
+                     (get %2 2)
+                     (= %1 pos)
+                     active
+                     (partial set-active pos)])
+               list)
+        ]
+    [view :completion-container
+     (if show-all
+       (into [view :completion-show-all] items))
+     (if (empty? items)
+       [view :completion-empty "This is where completions show up"]
+       (into
+        [view :completion-list]
+        items))
+     ]))
 
 (defn is-valid-cljs? [source]
   (try
@@ -153,6 +231,10 @@
      :on-eval submit
      :on-up go-up
      :on-down go-down})])
+
+(defn docs-view [docs]
+  [view :docs
+   (or docs [view :docs-empty "This is where docs show up"])])
 
 (defn set-print! [log]
   (set! cljs.core/*print-newline* false)
@@ -209,9 +291,9 @@
          :go-down go-down
          :complete-atom complete-atom
          :set-text set-text}]
-       [view
-        :docs
-        "completions"
-        (pr-str @complete-atom)
-        "dpcs here"
+       [completion-list
+        @complete-atom
+        ;; TODO this should also replace the text....
+        #(swap! complete-atom assoc :pos %)]
+       [docs-view
         @docs]])))

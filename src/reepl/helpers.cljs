@@ -21,6 +21,7 @@
 
 (defn get-styles [styles style-prop]
   (cond
+    (not style-prop) {}
     (keyword? style-prop) (styles style-prop)
     (sequential? style-prop) (reduce (fn [a b] (merge a (get-styles styles b))) {} style-prop)
     :default style-prop))
