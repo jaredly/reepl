@@ -276,8 +276,8 @@
    :hist-pos 0
    :history ["{:a 2 {:b 3} 4}"]})
 
-(defn repl [execute complete-word get-docs]
-  (let [state (r/atom initial-state)
+(defn repl-main [execute complete-word get-docs state]
+  (let [;;state (r/atom initial-state)
         add-input (partial swap! state handlers/add-input)
         add-result (partial swap! state handlers/add-result)
         go-up (partial swap! state handlers/go-up)
@@ -320,8 +320,8 @@
        [docs-view
         @docs]])))
 
-#_(defn repl
+(defn repl
   ([execute complete-word get-docs]
-   (repl-view execute completion-list get-docs (r/atom initial-state)))
+   (repl-main execute complete-word get-docs (r/atom initial-state)))
   ([execute complete-word get-docs state]
-   (repl-view execute complete-word get-docs state)))
+   (repl-main execute complete-word get-docs state)))
