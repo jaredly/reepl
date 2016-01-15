@@ -94,7 +94,7 @@
       (fn [this]
         (let [el (r/dom-node this)
               ;; On Escape, should we revert to the pre-completion-text?
-              cancel-keys #{37 38 39 40 13 27}
+              cancel-keys #{13 27}
               cmp-ignore #{9 16 17 18 91 93}
               cmp-show #{17 18 91 93}
               inst (js/CodeMirror.

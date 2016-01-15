@@ -19,7 +19,6 @@
 (def styles
   {:container {:font-family "monospace"
                :flex 1
-               :background-color "white"
                :display :flex
                :white-space "pre-wrap"}
 

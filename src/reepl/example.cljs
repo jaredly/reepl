@@ -27,6 +27,8 @@
    :box {:width 700
          :margin-top 100
          :margin-bottom 100
+         :border-radius 5
+         :background-color "white"
          :flex 1
          }
    :title {
@@ -101,7 +103,9 @@
 ;; TODO fuzzy-match if there are no normal matches
 (defn process-apropos
   [text]
-  (let [matches? #(< -1 (.indexOf (str %) text))
+  (let [matches? #(and
+                   (= -1 (.indexOf (str %) "t_cljs$core"))
+                   (< -1 (.indexOf (str %) text)))
         starts-with (str "/" text)
         current-ns (str (replumb.repl/current-ns))
         replace-name (fn [sym]
