@@ -22,10 +22,12 @@
                         (.-anchor range)
                         (.-head range))
         words (complete-word text)]
-    (when words
-      #js {:list (clj->js words)
-           :from (.-anchor range)
-           :to (.-head range)})))
+    (when-not (empty? words)
+      {:list words
+       :num (count words)
+       :pos 0
+       :from (.-anchor range)
+       :to (.-head range)})))
 
 (js/CodeMirror.registerHelper
  "wordChars"
@@ -44,12 +46,27 @@
                               :completeSingle false})
            ))))
 
+(defn cycle-pos [count current go-back?]
+  (if go-back?
+    (if (>= 0 current)
+      (dec count)
+      (dec current))
+    (if (>= current (dec count))
+      0
+      (inc current))))
+
+(defn cycle-completions [{:keys [num pos] :as state} go-back?]
+  (if (> num 1)
+    (assoc state :pos (cycle-pos num pos go-back?))
+    state))
+
 (defn code-mirror
   [value-atom {:keys [style
                       on-change
                       on-eval
                       on-up
                       on-down
+                      complete-atom
                       complete-word
                       should-go-up
                       should-go-down
@@ -60,6 +77,8 @@
      {:component-did-mount
       (fn [this]
         (let [el (r/dom-node this)
+              cancel-keys #{37 38 39 40 13 27}
+              cmp-ignore #{9}
               inst (js/CodeMirror.
                     el
                     #js {:lineNumbers false
@@ -71,7 +90,7 @@
                          :autoCloseBrackets true
                          :mode "clojure"})]
 
-          (enable-auto-complete inst complete-word)
+          ;; (enable-auto-complete inst complete-word)
           (reset! cm inst)
           (.on inst "change"
                (fn []
@@ -79,28 +98,44 @@
                    (when-not (= value @value-atom)
                      (on-change value)))))
 
+          (.on inst "keyup"
+               (fn [inst evt]
+                 (if (cancel-keys (.-keyCode evt))
+                   (reset! complete-atom nil)
+                   (when-not (cmp-ignore (.-keyCode evt))
+                     (reset! complete-atom (repl-hint complete-word inst nil))
+                     ))
+                 ))
+
           (.on inst "keydown"
                (fn [inst evt]
-                 (js/console.log (.-state.completionActive inst) "keydown" (.-keyCode evt))
-                 (when (not (and (.-state.completionActive inst)
-                                 (.-state.completionActive.data inst)
-                                 (< 0 (.-state.completionActive.data.list.length inst))))
-                   (case (.-keyCode evt)
-                     13 (let [source (.getValue inst)] ; enter
-                          (when (should-eval source inst evt)
-                            (.preventDefault evt)
-                            (on-eval source)))
-                     38 (let [source (.getValue inst)] ; up
-                          (when (should-go-up source inst)
-                            (.preventDefault evt)
-                            (on-up)))
-                     40 (let [source (.getValue inst)] ; down
-                          (when (should-go-down source inst)
-                            (.preventDefault evt)
-                            (on-down)))
-                     :none))
-                 ))
-          ))
+                 (case (.-keyCode evt)
+                   ;; tab
+                   9 (do
+                       ;; TODO: do I ever want to use TAB normally?
+                       ;; Maybe if there are no completions...
+                       ;; Then I'd move this into cycle-completions?
+                       (.preventDefault evt)
+                       (swap! complete-atom
+                            cycle-completions
+                            (.-shiftKey evt)))
+                   ;; enter
+                   13 (let [source (.getValue inst)]
+                        (when (should-eval source inst evt)
+                          (.preventDefault evt)
+                          (on-eval source)))
+                   ;; up
+                   38 (let [source (.getValue inst)]
+                        (when (should-go-up source inst)
+                          (.preventDefault evt)
+                          (on-up)))
+                   ;; down
+                   40 (let [source (.getValue inst)]
+                        (when (should-go-down source inst)
+                          (.preventDefault evt)
+                          (on-down)))
+                   :none)
+                 ))))
 
       :component-did-update
       (fn [this old-argv]

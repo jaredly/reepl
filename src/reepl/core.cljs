@@ -22,6 +22,9 @@
                :background-color "white"
                :display :flex
                :white-space "pre-wrap"}
+   :docs {:height 200
+          :overflow :auto
+          }
    :repl-items {:flex 1
                 :overflow :auto
                 :height 500
@@ -136,7 +139,7 @@
                 (is-valid-cljs? source))))))
    })
 
-(defn repl-input [text submit complete-word {:keys [go-up go-down set-text]}]
+(defn repl-input [text submit complete-word {:keys [go-up go-down complete-atom set-text]}]
   [code-mirror/code-mirror text
    (merge
     cm-options
@@ -146,6 +149,7 @@
              :padding "2px"}
      :on-change set-text
      :complete-word complete-word
+     :complete-atom complete-atom
      :on-eval submit
      :on-up go-up
      :on-down go-down})])
@@ -168,7 +172,7 @@
    :hist-pos 0
    :history ["{:a 2 {:b 3} 4}"]})
 
-(defn repl [execute complete-word]
+(defn repl [execute complete-word get-docs]
   (let [state (r/atom initial-state)
 
         add-input (partial swap! state handlers/add-input)
@@ -180,7 +184,11 @@
         add-log (partial swap! state handlers/add-log)
 
         items (subs/items state)
-
+        complete-atom (r/atom nil)
+        docs (reaction
+              (let [{:keys [pos list] :as state} @complete-atom]
+                (when state
+                  (get-docs (first (get list pos))))))
         submit (fn [text]
                  (when (< 0 (count (.trim text)))
                    (add-input text)
@@ -199,4 +207,11 @@
         submit complete-word
         {:go-up go-up
          :go-down go-down
-         :set-text set-text}]])))
+         :complete-atom complete-atom
+         :set-text set-text}]
+       [view
+        :docs
+        "completions"
+        (pr-str @complete-atom)
+        "dpcs here"
+        @docs]])))
