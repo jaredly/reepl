@@ -21,10 +21,11 @@
         text (.getRange cm
                         (.-anchor range)
                         (.-head range))
-        words (complete-word text)]
+        words (vec (complete-word text))]
     (when-not (empty? words)
       {:list words
        :num (count words)
+       :active false
        :pos 0
        :from (.-anchor range)
        :to (.-head range)})))
@@ -55,10 +56,21 @@
       0
       (inc current))))
 
-(defn cycle-completions [{:keys [num pos] :as state} go-back?]
-  (if (> num 1)
-    (assoc state :pos (cycle-pos num pos go-back?))
-    state))
+(defn cycle-completions [{:keys [num pos active from to list] :as state}
+                         go-back? cm]
+  (when state
+    (let [pos (if active
+                (cycle-pos num pos go-back?)
+                pos)
+          text (get (get list pos) 2)]
+      (.replaceRange cm text from to)
+      (assoc state
+             :pos pos
+             :active true
+             :to #js {:line (.-line from)
+                      :ch (+ (count text)
+                             (.-ch from))})
+      )))
 
 (defn code-mirror
   [value-atom {:keys [style
@@ -78,7 +90,7 @@
       (fn [this]
         (let [el (r/dom-node this)
               cancel-keys #{37 38 39 40 13 27}
-              cmp-ignore #{9}
+              cmp-ignore #{9 16 17 18 91 93}
               inst (js/CodeMirror.
                     el
                     #js {:lineNumbers false
@@ -118,7 +130,8 @@
                        (.preventDefault evt)
                        (swap! complete-atom
                             cycle-completions
-                            (.-shiftKey evt)))
+                            (.-shiftKey evt)
+                            inst))
                    ;; enter
                    13 (let [source (.getValue inst)]
                         (when (should-eval source inst evt)
