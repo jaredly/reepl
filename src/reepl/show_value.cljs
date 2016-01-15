@@ -15,7 +15,8 @@
    :value-toggle {
                   :font-size 9
                   :padding 4
-                  :cursor :pointer}})
+                  :cursor :pointer}
+   :function {:color "#00a"}})
 
 (def view (partial helpers/view styles))
 (def text (partial helpers/text styles))
@@ -29,7 +30,10 @@
 
 (defn show-fn [fn]
   (let [parts (.split (.-name fn) \$)]
-    (->
+    [text
+     :function
+     "fn "
+     (->
      (str
       (str/join \. (butlast parts))
       \/
@@ -39,7 +43,7 @@
       "->")
      (.replace
       "_"
-      "-"))))
+      "-"))]))
 
 (defn show-str [val]
   (if (= js/Function (type val))

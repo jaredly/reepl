@@ -44,7 +44,6 @@
 (defn main-view [run-repl complete-word get-docs]
   [view :main
    [view :box
-    [text :title "Rejjj"]
     [reepl/repl run-repl complete-word get-docs]]])
 
 (defn debug [& val]
@@ -70,10 +69,7 @@
 (def replumb-opts
   (merge (replumb/browser-options
           ["/main.out" "/main.out"]
-          fetch-file!
-          #_(fn [& args]
-            (debug "replumb load noop" args))
-          #_io/fetch-file!)
+          fetch-file!)
          ;; TODO figure out file loading
          {:warning-as-error true ;:verbose true
           :no-pr-str-on-value true
@@ -101,7 +97,6 @@
     (= ns2 'cljs.core) 1
     :default (compare ns1 ns2)))
 
-;; TODO sort by position of matching
 ;; TODO auto-replace quil.core/ w/ q/ for example
 ;; TODO fuzzy-match if there are no normal matches
 (defn process-apropos

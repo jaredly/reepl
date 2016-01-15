@@ -9,7 +9,7 @@
     [pandeiro/boot-http          "0.6.3"           :scope "test"]
     [crisptrutski/boot-cljs-test "0.2.1"  :scope "test"]
     [zilti/boot-typed "0.1.1" :scope "test"]
-    [replumb "0.1.4-jared"]
+    [replumb "0.1.5-SNAPSHOT"]
 
     [reagent "0.5.1"]
     [re-frame "0.6.0"]

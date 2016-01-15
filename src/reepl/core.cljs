@@ -24,7 +24,12 @@
                :white-space "pre-wrap"}
 
    :intro-message {:padding "10px 20px"
-                   :line-height 1.5}
+                   :line-height 1.5
+                   :border-bottom "1px solid #aaa"
+                   :flex-direction :row
+                   :margin-bottom 10}
+   :intro-code {:background-color "#eee"
+                :padding "0 5px"}
 
    :completion-container {:position :relative
                           :font-size 12}
@@ -61,18 +66,26 @@
                 }
    :repl-item {:flex-direction :row
                :padding "3px 5px"}
+
+   :input-container {:flex-direction :row
+                     :border-top "2px solid #eee"
+                     :border-bottom "2px solid #eee"
+                     }
+   :main-caret {:padding "8px 10px"}
+
    :input-item {}
    :output-item {}
    :error-item {:color :red
                 :padding "5px 10px"}
-   :caret {:color "#aaa"
+   :underlying-error {:margin-left 10}
+   :caret {:color "#aaf"
            :font-weight "bold"
            :margin-right 5
            :margin-left 5
            :font-size 11
            :padding-top 2
            }
-   :input-caret {:color "#555"}
+   :input-caret {:color "#55f"}
    :input-text {:flex 1
                 :word-wrap :break-word}
    :output-caret {}
@@ -80,7 +93,8 @@
                   :word-wrap :break-word}
    :repl-input {:padding "5px 10px"
                 :font-family "monospace"
-                :font-size "1.3em"}
+                :font-size "1.3em"
+                :border-bottom "1px solid #aaa"}
    :clear-button {}
    })
 
@@ -89,9 +103,14 @@
 (def button (partial helpers/button styles))
 
 (def intro-message
-  [view :intro-message
-   "Welcome to Reepl! The Read-eval-print-loop that really understands you, that you can get along with.
-  Type :cljs/clear to clear the history, ... ???"])
+  [text :intro-message
+   [text {:style {:font-weight :bold
+                  :font-size "1.2em"}}
+    "Reepl: "]
+   "the Read-eval-print-loop that really understands you.
+  Type "
+   [text :intro-code ":cljs/clear"]
+   " to clear the history"])
 
 (defmulti repl-item :type)
 
@@ -113,7 +132,8 @@
     [view {:style [:repl-item :output-item :error-item]}
      message
      (when underlying
-       (.-message underlying)) ; TODO also show stack?
+       ;; TODO also show stack?
+       [text :underlying-error (.-message underlying)])
      ]))
 
 (defmethod repl-item :output
@@ -218,19 +238,21 @@
    })
 
 (defn repl-input [text submit complete-word {:keys [go-up go-down complete-atom set-text]}]
-  [code-mirror/code-mirror text
+  [view :input-container
+   [view {:style [:main-caret :input-caret]} ">"]
+   [code-mirror/code-mirror text
    (merge
     cm-options
     {:style {:height "auto"
-             :border-top "2px solid #eee"
              :font-size 16
+             :flex 1
              :padding "2px"}
      :on-change set-text
      :complete-word complete-word
      :complete-atom complete-atom
      :on-eval submit
      :on-up go-up
-     :on-down go-down})])
+     :on-down go-down})]])
 
 (defn docs-view [docs]
   [view :docs
@@ -256,7 +278,6 @@
 
 (defn repl [execute complete-word get-docs]
   (let [state (r/atom initial-state)
-
         add-input (partial swap! state handlers/add-input)
         add-result (partial swap! state handlers/add-result)
         go-up (partial swap! state handlers/go-up)
@@ -272,17 +293,18 @@
                 (when state
                   (get-docs (first (get list pos))))))
         submit (fn [text]
-                 (when (< 0 (count (.trim text)))
-                   (add-input text)
-                   (execute text #(add-result (not %1) %2))))]
+                 (if (= ":cljs/clear" (.trim text))
+                   (do
+                     (clear-items)
+                     (set-text ""))
+                   (when (< 0 (count (.trim text)))
+                     (add-input text)
+                     (execute text #(add-result (not %1) %2)))))]
 
     (set-print! add-log)
 
     (fn []
       [view :container
-       [button {:on-click clear-items
-                :style :clear-button}
-        "Clear"]
        [repl-items @items]
        [repl-input
         (subs/current-text state)
@@ -297,3 +319,9 @@
         #(swap! complete-atom assoc :pos %)]
        [docs-view
         @docs]])))
+
+#_(defn repl
+  ([execute complete-word get-docs]
+   (repl-view execute completion-list get-docs (r/atom initial-state)))
+  ([execute complete-word get-docs state]
+   (repl-view execute complete-word get-docs state)))
