@@ -93,6 +93,13 @@
   [text]
   (let [matches? #(< -1 (.indexOf (str %) text))
         starts-with (str "/" text)
+        current-ns (str (replumb.repl/current-ns))
+        replace-name (fn [sym]
+                       (if (or
+                            (= (namespace sym) "cljs.core")
+                            (= (namespace sym) current-ns))
+                         (name sym)
+                         (str sym)))
         defs (->> (ast/known-namespaces @replumb.repl/st)
                   (sort-by identity compare-ns)
                   (mapcat (fn [ns]
@@ -100,7 +107,8 @@
                               (map #(symbol ns-name (str %))
                                    (filter matches?
                                            (keys (ast/ns-publics @replumb.repl/st ns)))))))
-                  (map #(-> [% (str %) (name %)]))
+                  ;; [qualified symbol, show text, replace text]
+                  (map #(-> [% (str %) (replace-name %)]))
                   (sort-by second (partial compare-completion starts-with)))]
     (vec defs)))
 
