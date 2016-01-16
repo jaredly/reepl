@@ -71,7 +71,10 @@
 (def replumb-opts
   (merge (replumb/browser-options
           ["/main.out" "/main.out"]
-          fetch-file!)
+          #_(fn [& a]
+            nil)
+          fetch-file!
+          )
          ;; TODO figure out file loading
          {:warning-as-error true ;:verbose true
           :no-pr-str-on-value true

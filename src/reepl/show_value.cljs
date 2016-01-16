@@ -16,7 +16,8 @@
                   :font-size 9
                   :padding 4
                   :cursor :pointer}
-   :function {:color "#00a"}})
+   :function {:color "#00a"}
+   })
 
 (def view (partial helpers/view styles))
 (def text (partial helpers/text styles))
@@ -28,22 +29,73 @@
 (defn pprint-str [val]
   (pprint/write val :stream nil))
 
-(defn show-fn [fn]
+(def cljs-fn-prefix
+  "cljs$core$IFn$_invoke$arity$")
+
+(defn unmangle [raw]
+  (-> raw
+      (.replace "__GT_" "->")
+      (.replace "-QMARK_")
+      (.replace "-STAR_")
+      (.replace "_" "-")
+      ))
+
+(defn recover-cljs-name [parts]
+  (-> (str/join \. (butlast parts))
+      (str \/ (last parts))
+      unmangle
+      ))
+
+(defn get-cljs-arities [fn]
+  (map
+   #(aget fn %)
+   (filter #(.startsWith % cljs-fn-prefix) (js->clj (js/Object.keys fn)))))
+
+(defn get-fn-summary [fn]
+  (let [source (str fn)
+        ;; lines (str/split string "\n")
+        args (second (re-find #"\(([^\)]+)\)" source))]
+    (map unmangle
+         (str/split args \,))))
+
+(defn get-function-forms [fn]
+  (let [arities (get-cljs-arities fn)
+        arities (if (empty? arities)
+                  [fn]
+                  arities)]
+    (map get-fn-summary
+         arities)))
+
+(defn get-fn-name [fn]
   (let [parts (.split (.-name fn) \$)]
-    [text
-     :function
-     "fn "
-     (->
-     (str
-      (str/join \. (butlast parts))
-      \/
-      (last parts))
-     (.replace
-      "__GT_"
-      "->")
-     (.replace
-      "_"
-      "-"))]))
+    (cond
+      (empty? (.-name fn)) "[anonymous]"
+      (= 1 (count parts)) (.-name fn)
+      :else (recover-cljs-name parts))))
+
+(defn str-fn-forms [forms]
+  (str
+   \[
+   (str/join "] [" (map (partial str/join " ") forms))
+   \]))
+
+(defn show-fn [fn]
+  [view
+   :function
+   [text
+    :function-head
+    "fn "
+    (get-fn-name fn)
+    ]
+   [text
+    :function-arities
+    (str-fn-forms
+     (get-function-forms fn))]
+   [text
+    :function-body
+    ;; TODO get the docs! that'd be so awesome
+
+    ]])
 
 (defn show-str [val]
   (if (= js/Function (type val))
