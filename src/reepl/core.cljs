@@ -238,6 +238,7 @@
 
 (defn repl-input [text submit complete-word {:keys [go-up go-down complete-atom set-text]}]
   [view :input-container
+   ;; TODO show "n/m" which entry out of how many history entries you're on
    [view {:style [:main-caret :input-caret]} ">"]
    [code-mirror/code-mirror text
    (merge

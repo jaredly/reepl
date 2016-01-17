@@ -71,9 +71,9 @@
 (def replumb-opts
   (merge (replumb/browser-options
           ["/main.out" "/main.out"]
-          #_(fn [& a]
+          (fn [& a]
             nil)
-          fetch-file!
+          #_fetch-file!
           )
          ;; TODO figure out file loading
          {:warning-as-error true ;:verbose true
@@ -106,28 +106,40 @@
 ;; TODO fuzzy-match if there are no normal matches
 (defn process-apropos
   [text]
-  (let [matches? #(and
+  (let [[only-ns text] (if-not (= -1 (.indexOf text "/"))
+                         (.split text "/")
+                         [nil text])
+        matches? #(and
+                   ;; TODO find out what these are... seem to be nil
                    (= -1 (.indexOf (str %) "t_cljs$core"))
                    (< -1 (.indexOf (str %) text)))
-        starts-with (str "/" text)
         current-ns (str (replumb.repl/current-ns))
+        starts-with (str "/" text)
         replace-name (fn [sym]
                        (if (or
                             (= (namespace sym) "cljs.core")
                             (= (namespace sym) current-ns))
                          (name sym)
                          (str sym)))
-        defs (->> (ast/known-namespaces @replumb.repl/st)
+        known-namespaces (ast/known-namespaces @replumb.repl/st)
+        defs (->> known-namespaces
                   (sort-by identity compare-ns)
                   (mapcat (fn [ns]
                             (let [ns-name (str ns)]
-                              (map #(symbol ns-name (str %))
+                              (if-not (or (nil? only-ns)
+                                          (= only-ns ns-name))
+                                []
+                                (map #(symbol ns-name (str %))
                                    (filter matches?
-                                           (keys (ast/ns-publics @replumb.repl/st ns)))))))
+                                           (keys (ast/ns-publics @replumb.repl/st ns))))))))
                   ;; [qualified symbol, show text, replace text]
                   (map #(-> [% (str %) (replace-name %)]))
                   (sort-by second (partial compare-completion starts-with)))]
-    (vec (take 50 defs))))
+    (vec (concat
+          (take 50 defs)
+          (map
+           #(-> [% (str %) (str % "/")])
+           (filter matches? known-namespaces))))))
 
 (defn process-doc
   [sym]
@@ -149,6 +161,8 @@
 (devtools/install!)
 
 ;; (swap! jsc/*loaded* conj 'quil.core)
+(swap! jsc/*loaded* conj 'reepl.core)
+(swap! jsc/*loaded* conj 'reepl.show-value)
 
 (defn complete-word [text]
   (when (>= (count text) 1)
