@@ -7,6 +7,7 @@
             [cljs.pprint :as pprint]
             [reagent.core :as r]
             [quil.core :as q :include-macros true]
+            [cljs.tools.reader]
 
             [replumb.core :as replumb]
             [replumb.repl]
@@ -43,10 +44,14 @@
 (def text (partial helpers/text styles))
 (def button (partial helpers/button styles))
 
+;; Used to make the repl reload-tolerant
+(defonce state
+  (r/atom reepl/initial-state))
+
 (defn main-view [run-repl complete-word get-docs]
   [view :main
    [view :box
-    [reepl/repl run-repl complete-word get-docs]]])
+    [reepl/repl run-repl complete-word get-docs state]]])
 
 (defn debug [& val]
   (let [val (if (= 1 (count val))
@@ -71,9 +76,9 @@
 (def replumb-opts
   (merge (replumb/browser-options
           ["/main.out" "/main.out"]
-          (fn [& a]
+          #_(fn [& a]
             nil)
-          #_fetch-file!
+          fetch-file!
           )
          ;; TODO figure out file loading
          {:warning-as-error true ;:verbose true
@@ -85,7 +90,10 @@
                           #(cb
                             (replumb/success? %)
                             (replumb/unwrap-result %))
-                          text))
+                          (if-not (= -1 (.indexOf text "\n"))
+                            (str "(do " text ")")
+                            text)
+                          ))
 
 (defn compare-completion [starts-with a b]
   (let [a-starts (not (nil? (.match a starts-with)))
@@ -163,6 +171,10 @@
 ;; (swap! jsc/*loaded* conj 'quil.core)
 (swap! jsc/*loaded* conj 'reepl.core)
 (swap! jsc/*loaded* conj 'reepl.show-value)
+(swap! jsc/*loaded* conj 'reepl.show-value)
+(swap! jsc/*loaded* conj 'clojure.string)
+(swap! jsc/*loaded* conj 'cljs.reader)
+(swap! jsc/*loaded* conj 'cljs.tools.reader)
 
 (defn complete-word [text]
   (when (>= (count text) 1)
@@ -173,5 +185,11 @@
 
   (r/render [main-view run-repl complete-word process-doc]
             (js/document.getElementById "container")))
+
+(run-repl "(require '[clojure.string :as str])" identity)
+(run-repl "(require '[reepl.core :as reepl])" identity)
+(run-repl "(require '[reepl.show-value])" identity)
+(run-repl "(require '[cljs.reader])" identity)
+(run-repl "(require '[cljs.tools.reader])" identity)
 
 (main)

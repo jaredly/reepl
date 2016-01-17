@@ -11,4 +11,6 @@
         history (reaction (:history @db))]
     (reaction (let [items @history
                     pos (- (count items) @idx 1)]
-                (get items pos)))))
+                {:pos pos
+                 :count (count items)
+                 :text (get items pos)}))))

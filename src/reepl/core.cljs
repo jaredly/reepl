@@ -4,6 +4,7 @@
                                    subscribe]]
             [clojure.string :as str]
             [cljs.reader]
+            [cljs.tools.reader]
 
             [reagent.core :as r]
             [reepl.code-mirror :as code-mirror]
@@ -70,7 +71,9 @@
                      :border-top "2px solid #eee"
                      :border-bottom "2px solid #eee"
                      }
-   :main-caret {:padding "8px 10px"}
+   :main-caret {:padding "8px 5px 8px 10px"
+                :margin-right 0
+                :flex-direction :row}
 
    :input-item {}
    :output-item {}
@@ -83,8 +86,10 @@
            :margin-left 5
            :font-size 11
            :padding-top 2
+           :flex-direction :row
            }
-   :input-caret {:color "#55f"}
+   :input-caret {:color "#55f"
+                 :margin-right 10}
    :input-text {:flex 1
                 :word-wrap :break-word}
    :output-caret {}
@@ -106,7 +111,7 @@
    [text {:style {:font-weight :bold
                   :font-size "1.2em"}}
     "Reepl: "]
-   "the Read-eval-print-loop that really understands you.
+   "the cljs Read-eval-print-loop that really understands you.
   Type "
    [text :intro-code ":cljs/clear"]
    " to clear the history"])
@@ -114,10 +119,11 @@
 (defmulti repl-item :type)
 
 (defmethod repl-item :input
-  [{:keys [text]}]
+  [{:keys [num text]}]
   [view {:style [:repl-item :input-item]}
-   [view {:style [:caret :input-caret]} ">"]
-   [view :input-text text]])
+   [view {:style [:caret :input-caret]} "[" num "]>"]
+   [view :input-text
+    [code-mirror/colored-text text]]])
 
 (defmethod repl-item :log
   [{:keys [value]}]
@@ -200,7 +206,7 @@
 (defn is-valid-cljs? [source]
   (try
     (do
-      (cljs.reader/read-string source)
+      (cljs.tools.reader/read-string source)
       true)
     (catch js/Error _
       false)))
@@ -236,23 +242,30 @@
                 (is-valid-cljs? source))))))
    })
 
-(defn repl-input [text submit complete-word {:keys [go-up go-down complete-atom set-text]}]
-  [view :input-container
-   ;; TODO show "n/m" which entry out of how many history entries you're on
-   [view {:style [:main-caret :input-caret]} ">"]
-   [code-mirror/code-mirror text
-   (merge
-    cm-options
-    {:style {:height "auto"
-             :font-size 16
-             :flex 1
-             :padding "2px"}
-     :on-change set-text
-     :complete-word complete-word
-     :complete-atom complete-atom
-     :on-eval submit
-     :on-up go-up
-     :on-down go-down})]])
+(defn repl-input [state submit complete-word {:keys [go-up go-down complete-atom set-text]}]
+  (let [{:keys [pos count text]} @state]
+    [view :input-container
+     ;; TODO show "n/m" which entry out of how many history entries you're on
+     [view {:style [:input-caret :main-caret]}
+      "["
+      (inc pos)
+      "/"
+      count
+      "]"
+      ">"]
+     [code-mirror/code-mirror (reaction (:text @state))
+      (merge
+       cm-options
+       {:style {:height "auto"
+                :font-size 16
+                :flex 1
+                :padding "2px"}
+        :on-change set-text
+        :complete-word complete-word
+        :complete-atom complete-atom
+        :on-eval submit
+        :on-up go-up
+        :on-down go-down})]]))
 
 (defn docs-view [docs]
   [view :docs
@@ -298,6 +311,7 @@
                      (clear-items)
                      (set-text ""))
                    (when (< 0 (count (.trim text)))
+                     (set-text text)
                      (add-input text)
                      (execute text #(add-result (not %1) %2)))))]
 

@@ -35,9 +35,10 @@
 (defn unmangle [raw]
   (-> raw
       (.replace "__GT_" "->")
-      (.replace "-QMARK_")
-      (.replace "-STAR_")
-      (.replace "_" "-")
+      (.replace "_QMARK_" "?")
+      (.replace "_STAR_" "*")
+      (.replace "_SHARP_" "#")
+      (.replace (js/RegExp. "_" "g") "-")
       ))
 
 (defn recover-cljs-name [parts]

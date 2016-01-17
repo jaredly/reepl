@@ -17,10 +17,11 @@
   (update db :items concat items))
 
 (defn add-input [db input]
-  (-> db
+  (let [inum (count (:history db))]
+    (-> db
       (assoc :hist-pos 0)
       (update :history conj "")
-      (update :items conj {:type :input :text input})))
+      (update :items conj {:type :input :text input :num inum}))))
 
 (defn add-result [db error? value]
   (update db :items conj {:type (if error? :error :output)
@@ -44,14 +45,14 @@
   (let [pos (:hist-pos db)
         len (count (:history db))
         new-pos (if (>= pos (dec len))
-                  0
+                  pos
                   (inc pos))]
     (assoc db :hist-pos new-pos)))
 
 (defn go-down [db]
   (let [pos (:hist-pos db)
         new-pos (if (<= pos 0)
-                  (dec (count (:history db)))
+                  0
                   (dec pos))
         ]
     (assoc db :hist-pos new-pos)))

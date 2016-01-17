@@ -5,6 +5,8 @@
             [cljsjs.codemirror.addon.edit.closebrackets]
             [cljsjs.codemirror.addon.edit.matchbrackets]
             [cljsjs.codemirror.addon.hint.show-hint]
+            [cljsjs.codemirror.addon.runmode.runmode]
+            [cljsjs.codemirror.addon.runmode.colorize]
             [cljsjs.codemirror.mode.clojure]
             [cljsjs.codemirror.mode.javascript]
             [cljsjs.codemirror.keymap.vim]
@@ -149,12 +151,14 @@
                           (on-eval source)))
                    ;; up
                    38 (let [source (.getValue inst)]
-                        (when (should-go-up source inst)
+                        (when (and (not (.-shiftKey evt))
+                                   (should-go-up source inst))
                           (.preventDefault evt)
                           (on-up)))
                    ;; down
                    40 (let [source (.getValue inst)]
-                        (when (should-go-down source inst)
+                        (when (and (not (.-shiftKey evt))
+                                   (should-go-down source inst))
                           (.preventDefault evt)
                           (on-down)))
                    :none)
@@ -172,3 +176,14 @@
       (fn [_ _ _]
         @value-atom
         [:div {:style style}])})))
+
+(defn colored-text [text style]
+  (r/create-class
+   {:component-did-mount
+    (fn [this]
+      (let [node (r/dom-node this)]
+        (js/CodeMirror.colorize #js[node] "clojure")))
+    :reagent-render
+    (fn [_]
+      [:pre {:style (merge {:padding 0 :margin 0} style)}
+       text])}))
