@@ -32,19 +32,10 @@
 (def cljs-fn-prefix
   "cljs$core$IFn$_invoke$arity$")
 
-(defn unmangle [raw]
-  (-> raw
-      (.replace "__GT_" "->")
-      (.replace "_QMARK_" "?")
-      (.replace "_STAR_" "*")
-      (.replace "_SHARP_" "#")
-      (.replace (js/RegExp. "_" "g") "-")
-      ))
-
 (defn recover-cljs-name [parts]
   (-> (str/join \. (butlast parts))
       (str \/ (last parts))
-      unmangle
+      demunge
       ))
 
 (defn get-cljs-arities [fn]
@@ -56,7 +47,7 @@
   (let [source (str fn)
         ;; lines (str/split string "\n")
         args (second (re-find #"\(([^\)]+)\)" source))]
-    (map unmangle
+    (map demunge
          (str/split args \,))))
 
 (defn get-function-forms [fn]

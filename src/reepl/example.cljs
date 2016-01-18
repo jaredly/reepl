@@ -95,22 +95,43 @@
                             text)
                           ))
 
-(defn compare-completion [starts-with a b]
-  (let [a-starts (not (nil? (.match a starts-with)))
-        b-starts (not (nil? (.match b starts-with)))]
-    (cond
-      (and a-starts b-starts) (compare a b)
-      a-starts -1
-      b-starts 1
-      :default (compare a b))))
-
-(defn compare-ns [ns1 ns2]
+(defn compare-completion [text a b]
   (cond
+    (and (= text a)
+         (= text b)) 0
+    (= text a) -1
+    (= text b) 1
+    :else
+    (let [a-starts (= 0 (.indexOf a text))
+          b-starts (= 0 (.indexOf b text))]
+      (cond
+        (and a-starts b-starts) 0
+        a-starts -1
+        b-starts 1
+        :default 0))))
+
+(defn compare-ns [current ns1 ns2]
+  (cond
+    (= ns1 current) -1
+    (= ns2 current) 1
     (= ns1 'cljs.core) -1
     (= ns2 'cljs.core) 1
     :default (compare ns1 ns2)))
 
-;; TODO auto-replace quil.core/ w/ q/ for example
+(defn get-from-js-ns [ns]
+  (let [parts (map munge (.split (str ns) "."))]
+    (map demunge (js/Object.keys (reduce aget js/window parts)))))
+
+(defn dedup-requires
+  "Takes a map of {require-name ns-name} and dedups multiple keys that have the
+  same ns-name value."
+  [requires]
+  (first
+   (reduce (fn [[result seen] [k v]]
+            (if (seen v)
+              [result seen]
+              [(assoc result k v) (conj seen v)])) [{} #{}] requires)))
+
 ;; TODO fuzzy-match if there are no normal matches
 (defn process-apropos
   [text]
@@ -118,36 +139,49 @@
                          (.split text "/")
                          [nil text])
         matches? #(and
-                   ;; TODO find out what these are... seem to be nil
+                   ;; TODO find out what these t_cljs$core things are... seem to be nil
                    (= -1 (.indexOf (str %) "t_cljs$core"))
                    (< -1 (.indexOf (str %) text)))
-        current-ns (str (replumb.repl/current-ns))
+        current-ns (replumb.repl/current-ns)
         starts-with (str "/" text)
         replace-name (fn [sym]
                        (if (or
                             (= (namespace sym) "cljs.core")
-                            (= (namespace sym) current-ns))
+                            (= (namespace sym) (str current-ns)))
                          (name sym)
                          (str sym)))
-        known-namespaces (ast/known-namespaces @replumb.repl/st)
-        defs (->> known-namespaces
-                  (sort-by identity compare-ns)
-                  (mapcat (fn [ns]
-                            (let [ns-name (str ns)]
+        requires (:requires
+                  (ast/namespace @replumb.repl/st current-ns))
+        only-ns (when only-ns
+                  (or (str (get requires (symbol only-ns)))
+                      only-ns))
+        requires (concat
+                  [[nil current-ns]
+                   [nil 'cljs.core]]
+                  (dedup-requires (vec requires)))
+        names (set (apply concat requires))
+        defs (->> requires
+                  (sort-by second (partial compare-ns current-ns))
+                  (mapcat (fn [[name ns]]
+                            (let [ns-name (str ns)
+                                  publics (keys (ast/ns-publics @replumb.repl/st ns))
+                                  publics (if (empty? publics)
+                                            (get-from-js-ns ns)
+                                            publics)]
                               (if-not (or (nil? only-ns)
                                           (= only-ns ns-name))
                                 []
-                                (map #(symbol ns-name (str %))
+                                (map #(symbol name (str %))
                                    (filter matches?
-                                           (keys (ast/ns-publics @replumb.repl/st ns))))))))
+                                           publics))))))
                   ;; [qualified symbol, show text, replace text]
-                  (map #(-> [% (str %) (replace-name %)]))
-                  (sort-by second (partial compare-completion starts-with)))]
+                  (map #(-> [% (str %) (replace-name %) (name %)]))
+                  (sort-by #(get % 3) (partial compare-completion text)))]
     (vec (concat
           (take 50 defs)
           (map
-           #(-> [% (str %) (str % "/")])
-           (filter matches? known-namespaces))))))
+           #(-> [% (str %) (str %)])
+           (filter matches? names))))))
 
 (defn process-doc
   [sym]
