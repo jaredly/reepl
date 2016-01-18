@@ -117,22 +117,22 @@
    [text :intro-code ":cljs/clear"]
    " to clear the history"])
 
-(defmulti repl-item :type)
+(defmulti repl-item (fn [item opts] (:type item)))
 
 (defmethod repl-item :input
-  [{:keys [num text]}]
+  [{:keys [num text]} _]
   [view {:style [:repl-item :input-item]}
    [view {:style [:caret :input-caret]} "[" num "]>"]
    [view :input-text
     [code-mirror/colored-text text]]])
 
 (defmethod repl-item :log
-  [{:keys [value]}]
+  [{:keys [value]} opts]
   [view {:style [:repl-item :log-item]}
-   [show-value value nil]])
+   [show-value value nil opts]])
 
 (defmethod repl-item :error
-  [{:keys [value]}]
+  [{:keys [value]} opts]
   (let [message (.-message value)
         underlying (.-cause value)]
     [view {:style [:repl-item :output-item :error-item]}
@@ -143,10 +143,10 @@
      ]))
 
 (defmethod repl-item :output
-  [{:keys [value]}]
+  [{:keys [value]} opts]
   [view {:style [:repl-item :output-item]}
    [view {:style [:caret :output-caret]} "<"]
-   [view :output-value [show-value value nil]]])
+   [view :output-value [show-value value nil opts]]])
 
 (defn repl-items [_]
   (r/create-class
@@ -155,11 +155,11 @@
       (let [el (r/dom-node this)]
         (set! (.-scrollTop el) (.-scrollHeight el))))
     :reagent-render
-    (fn [items]
+    (fn [items opts]
       (into
        [view :repl-items
         intro-message]
-       (map repl-item items)))}))
+       (map #(repl-item % opts) items)))}))
 
 (def canScrollIfNeeded
   (not (nil? (.scrollIntoViewIfNeeded js/document.body))))
@@ -212,6 +212,8 @@
     (catch js/Error _
       false)))
 
+;; TODO these should probably go inside code-mirror.cljs? They are really
+;; coupled to CodeMirror....
 (def default-cm-opts
   {:should-go-up
    (fn [source inst]
@@ -225,7 +227,8 @@
            last-line (.lastLine inst)]
        (= last-line (.-line pos))))
 
-   ;; TODO if the cursor is inside a list, and the function doesn't have enought arguments yet, then return false
+   ;; TODO if the cursor is inside a list, and the function doesn't have enought
+   ;; arguments yet, then return false
    ;; e.g. (map |) <- map needs at least one argument.
    :should-eval
    (fn [source inst evt]
@@ -248,7 +251,11 @@
 (defn repl-input [state submit cm-opts]
   {:pre [(every? (comp not nil?)
                  (map cm-opts
-                      [:on-up :on-down :complete-atom :complete-word :on-change]))]}
+                      [:on-up
+                       :on-down
+                       :complete-atom
+                       :complete-word
+                       :on-change]))]}
   (let [{:keys [pos count text]} @state]
     [view :input-container
      [view {:style [:input-caret :main-caret]}
@@ -293,10 +300,15 @@
    :go-down (partial swap! state handlers/go-down)
    :clear-items (partial swap! state handlers/clear-items)
    :set-text (partial swap! state handlers/set-text)
-   :add-log (partial swap! state handlers/add-log)}
-  )
+   :add-log (partial swap! state handlers/add-log)})
 
-(defn repl [& {:keys [execute complete-word get-docs state js-cm-opts on-cm-init]}]
+(defn repl [& {:keys [execute
+                      complete-word
+                      get-docs
+                      state
+                      show-value-opts
+                      js-cm-opts
+                      on-cm-init]}]
   (let [state (or state (r/atom initial-state))
         {:keys
          [add-input
@@ -327,7 +339,7 @@
 
     (fn []
       [view :container
-       [repl-items @items]
+       [repl-items @items show-value-opts]
        [repl-input
         (subs/current-text state)
         submit
@@ -346,10 +358,3 @@
         #_(swap! complete-atom assoc :pos % :active true)]
        [docs-view
         @docs]])))
-
-
-#_(defn repl
-  ([execute complete-word get-docs]
-   (repl-main execute complete-word get-docs (r/atom initial-state)))
-  ([execute complete-word get-docs state]
-   (repl-main execute complete-word get-docs state)))

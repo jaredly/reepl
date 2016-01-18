@@ -71,7 +71,6 @@
 (defn parinferize!
   "Add parinfer goodness to a codemirror editor"
   ([cm key- parinfer-mode]
-   (js/console.log "initi!" key-)
    (when-not (get @state key-)
      (let [initial-state (assoc empty-editor-state
                                 :mode parinfer-mode)

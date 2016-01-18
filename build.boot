@@ -94,8 +94,9 @@
   (comp (cljs :source-map true
               :compiler-options {:asset-path "target/out"
                                  :foreign-libs foreign-libs}
-              :optimizations :none)
+              :optimizations :advanced)
         (sift :add-jar {'cljsjs/codemirror #"cljsjs/codemirror/development/codemirror.css"})
-        (sift :move {#"cljsjs/codemirror/development/codemirror.css" "vendor/codemirror/codemirror.css"})
+        (sift :move {#"cljsjs/codemirror/development/codemirror.css"
+                     "vendor/codemirror/codemirror.css"})
         ))
 

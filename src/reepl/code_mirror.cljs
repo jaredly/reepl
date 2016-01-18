@@ -12,19 +12,29 @@
             [cljsjs.codemirror.keymap.vim]
             [cljs.pprint :as pprint]))
 
+;; TODO can we avoid the global state modification here?
+((aget js/CodeMirror "registerHelper")
+ "wordChars"
+ "clojure"
+ #"[^\s\(\)\[\]\{\},`']")
 
-(defn cm-current-word [cm]
+(defn cm-current-word
+  "Find the current 'word' according to CodeMirror's `wordChars' list"
+  [cm]
   (let [pos (.getCursor cm)
         back #js {:line (.-line pos)
                   :ch (dec (.-ch pos))}]
     (.findWordAt cm back)))
 
-(defn repl-hint [complete-word cm options]
+(defn repl-hint
+  "Get a new completion state."
+  [complete-word cm options]
   (let [range (cm-current-word cm)
         text (.getRange cm
                         (.-anchor range)
                         (.-head range))
-        words (vec (complete-word text))]
+        words (when (not (empty? text))
+                (vec (complete-word text)))]
     (when-not (empty? words)
       {:list words
        :num (count words)
@@ -35,24 +45,18 @@
        :from (.-anchor range)
        :to (.-head range)})))
 
-(js/CodeMirror.registerHelper
- "wordChars"
- "clojure"
- #"[^\s\(\)\[\]\{\},`']")
+(defn cycle-pos
+  "Cycle through positions. Returns [active? new-pos].
 
-(defn enable-auto-complete [cm complete-word]
-  (def thecm cm)
-  (.on cm "keyup"
-       (fn [cm evt]
-         (when (not (or
-                     (.-state.completionActive cm)
-                     (#{13 27 32} (.-keyCode evt))))
-           (.showHint cm #js {:hint (partial repl-hint
-                                             complete-word)
-                              :completeSingle false})
-           ))))
-
-(defn cycle-pos [count current go-back? initial-active]
+  count
+    total number of completions
+  current
+    current position
+  go-back?
+    should we be going in reverse
+  initial-active
+    if false, then we return not-active when wrapping around"
+  [count current go-back? initial-active]
   (if go-back?
     (if (>= 0 current)
       (if initial-active
@@ -65,11 +69,21 @@
         [false 0])
       [true (inc current)])))
 
-(defn cycle-completions [{:keys [num pos active from to list initial-text] :as state}
-                         go-back?
-                         cm
-                         evt
-                         ]
+(defn cycle-completions
+  "Cycle through completions, changing the codemirror text accordingly. Returns
+  a new state map.
+
+  state
+    the current completion state
+  go-back?
+    whether to cycle in reverse (generally b/c shift is pressed)
+  cm
+    the codemirror instance
+  evt
+    the triggering event. it will be `.preventDefault'd if there are completions
+    to cycle through."
+  [{:keys [num pos active from to list initial-text] :as state}
+   go-back? cm evt]
   (when (and state (< 1 (count list)))
     (.preventDefault evt)
     (let [initial-active (= initial-text (get (first list) 2))
@@ -79,6 +93,8 @@
           text (if active
                  (get (get list pos) 2)
                  initial-text)]
+      ;; TODO don't replaceRange here, instead watch the state atom and react to
+      ;; that.
       (.replaceRange cm text from to)
       (assoc state
              :pos pos
@@ -87,7 +103,32 @@
                       :ch (+ (count text)
                              (.-ch from))}))))
 
+;; TODO refactor this to be smaller
 (defn code-mirror
+  "Create a code-mirror editor that knows a fair amount about being a good
+  repl. The parameters:
+
+  value-atom (reagent atom)
+    when this changes, the editor will update to reflect it.
+
+  options (TODO finish documenting)
+
+  :style (reagent style map)
+    will be applied to the container element
+
+  :on-change (fn [text] -> nil)
+  :on-eval (fn [text] -> nil)
+  :on-up (fn [] -> nil)
+  :on-down (fn [] -> nil)
+  :should-go-up
+  :should-go-down
+  :should-eval
+
+  :js-cm-opts
+    options passed into the CodeMirror constructor
+
+  :on-cm-init (fn [cm] -> nil)
+    called with the CodeMirror instance, for whatever extra fiddling you want to do."
   [value-atom {:keys [style
                       on-change
                       on-eval
@@ -124,7 +165,6 @@
                        :mode "clojure"}
                       js-cm-opts)))]
 
-          ;; (enable-auto-complete inst complete-word)
           (reset! cm inst)
           (.on inst "change"
                (fn []
@@ -199,7 +239,7 @@
    {:component-did-mount
     (fn [this]
       (let [node (r/dom-node this)]
-        (js/CodeMirror.colorize #js[node] "clojure")))
+        ((aget js/CodeMirror "colorize") #js[node] "clojure")))
     :reagent-render
     (fn [_]
       [:pre {:style (merge {:padding 0 :margin 0} style)}
