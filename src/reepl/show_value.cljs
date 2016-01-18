@@ -61,7 +61,7 @@
 (defn get-fn-name [fn]
   (let [parts (.split (.-name fn) \$)]
     (cond
-      (empty? (.-name fn)) "[anonymous]"
+      (empty? (.-name fn)) "*anonymous*"
       (= 1 (count parts)) (.-name fn)
       :else (recover-cljs-name parts))))
 

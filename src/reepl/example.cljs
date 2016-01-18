@@ -14,6 +14,7 @@
             [replumb.ast :as ast]
             [replumb.doc-maps :as docs]
             [cljs.repl :as repl]
+            [reepl.parinferize :as parinferize]
 
             [quil.middleware :as m])
   (:import goog.net.XhrIo))
@@ -51,7 +52,17 @@
 (defn main-view [run-repl complete-word get-docs]
   [view :main
    [view :box
-    [reepl/repl run-repl complete-word get-docs state]]])
+    [reepl/repl
+     :execute run-repl
+     :complete-word complete-word
+     :get-docs get-docs
+     :state state
+     :js-cm-opts {:mode "clojure-parinfer"
+                  :keyMap "vim"
+                  :showCursorWhenSelecting true
+                  }
+     :on-cm-init #(parinferize/parinferize! % :repl-infer :indent-mode)
+     ]]])
 
 (defn debug [& val]
   (let [val (if (= 1 (count val))
@@ -171,9 +182,9 @@
                               (if-not (or (nil? only-ns)
                                           (= only-ns ns-name))
                                 []
-                                (map #(symbol name (str %))
+                                (sort (map #(symbol name (str %))
                                    (filter matches?
-                                           publics))))))
+                                           publics)))))))
                   ;; [qualified symbol, show text, replace text]
                   (map #(-> [% (str %) (replace-name %) (name %)]))
                   (sort-by #(get % 3) (partial compare-completion text)))]
@@ -202,7 +213,7 @@
 
 (devtools/install!)
 
-;; (swap! jsc/*loaded* conj 'quil.core)
+(swap! jsc/*loaded* conj 'quil.core)
 (swap! jsc/*loaded* conj 'reepl.core)
 (swap! jsc/*loaded* conj 'reepl.show-value)
 (swap! jsc/*loaded* conj 'reepl.show-value)
@@ -220,10 +231,15 @@
   (r/render [main-view run-repl complete-word process-doc]
             (js/document.getElementById "container")))
 
+(run-repl "(require '[quil.core :as q])" identity)
 (run-repl "(require '[clojure.string :as str])" identity)
 (run-repl "(require '[reepl.core :as reepl])" identity)
 (run-repl "(require '[reepl.show-value])" identity)
 (run-repl "(require '[cljs.reader])" identity)
 (run-repl "(require '[cljs.tools.reader])" identity)
 
+(js/setupClojureParinferMode js/CodeMirror)
+
 (main)
+(defonce -initing
+  (parinferize/start-editor-sync!))

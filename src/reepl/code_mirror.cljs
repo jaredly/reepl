@@ -51,20 +51,29 @@
                               :completeSingle false})
            ))))
 
-(defn cycle-pos [count current go-back?]
+(defn cycle-pos [count current go-back? initial-active]
   (if go-back?
     (if (>= 0 current)
-      [false 0]
+      (if initial-active
+        [true (dec count)]
+        [false 0])
       [true (dec current)])
     (if (>= current (dec count))
-      [false 0]
+      (if initial-active
+        [true 0]
+        [false 0])
       [true (inc current)])))
 
 (defn cycle-completions [{:keys [num pos active from to list initial-text] :as state}
-                         go-back? cm]
-  (when state
-    (let [[active pos] (if active
-                         (cycle-pos num pos go-back?)
+                         go-back?
+                         cm
+                         evt
+                         ]
+  (when (and state (< 1 (count list)))
+    (.preventDefault evt)
+    (let [initial-active (= initial-text (get (first list) 2))
+          [active pos] (if active
+                         (cycle-pos num pos go-back? initial-active)
                          [true (if go-back? (dec num) pos)])
           text (if active
                  (get (get list pos) 2)
@@ -75,8 +84,7 @@
              :active active
              :to #js {:line (.-line from)
                       :ch (+ (count text)
-                             (.-ch from))})
-      )))
+                             (.-ch from))}))))
 
 (defn code-mirror
   [value-atom {:keys [style
@@ -88,7 +96,9 @@
                       complete-word
                       should-go-up
                       should-go-down
-                      should-eval]}]
+                      should-eval
+                      js-cm-opts
+                      on-cm-init]}]
 
   (let [cm (atom nil)]
     (r/create-class
@@ -101,14 +111,17 @@
               cmp-show #{17 18 91 93}
               inst (js/CodeMirror.
                     el
-                    #js {:lineNumbers false
-                         :viewportMargin js/Infinity
-                         :matchBrackets true
-                         :extraKeys
-                         #js {"Shift-Enter" "newlineAndIndent"}
-                         :value @value-atom
-                         :autoCloseBrackets true
-                         :mode "clojure"})]
+                    (clj->js
+                     (merge
+                      {:lineNumbers false
+                       :viewportMargin js/Infinity
+                       :matchBrackets true
+                       :autofocus true
+                       :extraKeys #js {"Shift-Enter" "newlineAndIndent"}
+                       :value @value-atom
+                       :autoCloseBrackets true
+                       :mode "clojure"}
+                      js-cm-opts)))]
 
           ;; (enable-auto-complete inst complete-word)
           (reset! cm inst)
@@ -139,11 +152,11 @@
                        ;; TODO: do I ever want to use TAB normally?
                        ;; Maybe if there are no completions...
                        ;; Then I'd move this into cycle-completions?
-                       (.preventDefault evt)
                        (swap! complete-atom
                             cycle-completions
                             (.-shiftKey evt)
-                            inst))
+                            inst
+                            evt))
                    ;; enter
                    13 (let [source (.getValue inst)]
                         (when (should-eval source inst evt)
@@ -162,7 +175,10 @@
                           (.preventDefault evt)
                           (on-down)))
                    :none)
-                 ))))
+                 ))
+          (when on-cm-init
+            (on-cm-init inst))
+          ))
 
       :component-did-update
       (fn [this old-argv]

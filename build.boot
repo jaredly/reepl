@@ -9,8 +9,9 @@
     [pandeiro/boot-http          "0.6.3"           :scope "test"]
     [crisptrutski/boot-cljs-test "0.2.1"  :scope "test"]
     [zilti/boot-typed "0.1.1" :scope "test"]
-    [replumb "0.1.5-SNAPSHOT"]
 
+    [replumb "0.1.5-SNAPSHOT"]
+    [parinfer "0.2.3"]
     [reagent "0.5.1"]
     [re-frame "0.6.0"]
     [binaryage/devtools "0.4.1"]
@@ -26,7 +27,8 @@
 
     [org.clojure/clojure         "1.7.0"]
     [org.clojure/core.typed "0.3.18"]
-    [org.clojure/clojurescript   "1.7.228"]])
+    [org.clojure/clojurescript   "1.7.228"]
+    ])
 
 (require
   '[adzerk.boot-cljs      :refer [cljs]]

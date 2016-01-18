@@ -48,7 +48,8 @@
                          :flex-direction :row
                          :background-color "#eef"
                          :flex-wrap :wrap}
-   :completion-item {:padding "3px 5px 3px"}
+   :completion-item {;; :cursor :pointer TODO make these clickable
+                     :padding "3px 5px 3px"}
    :completion-selected {:background-color "#eee"}
    :completion-active {:background-color "#aaa"}
 
@@ -190,7 +191,7 @@
                      (get %2 2)
                      (= %1 pos)
                      active
-                     (partial set-active pos)])
+                     (partial set-active %1)])
                list)
         ]
     [view :completion-container
@@ -211,7 +212,7 @@
     (catch js/Error _
       false)))
 
-(def cm-options
+(def default-cm-opts
   {:should-go-up
    (fn [source inst]
      (let [pos (.getCursor inst)]
@@ -224,8 +225,10 @@
            last-line (.lastLine inst)]
        (= last-line (.-line pos))))
 
+   ;; TODO if the cursor is inside a list, and the function doesn't have enought arguments yet, then return false
+   ;; e.g. (map |) <- map needs at least one argument.
    :should-eval
-   (fn [source inst evt] ; todo check syntax, cursor position
+   (fn [source inst evt]
      (if (.-shiftKey evt)
        false
        (if (.-metaKey evt)
@@ -242,30 +245,23 @@
                 (is-valid-cljs? source))))))
    })
 
-(defn repl-input [state submit complete-word {:keys [go-up go-down complete-atom set-text]}]
+(defn repl-input [state submit cm-opts]
+  {:pre [(every? (comp not nil?)
+                 (map cm-opts
+                      [:on-up :on-down :complete-atom :complete-word :on-change]))]}
   (let [{:keys [pos count text]} @state]
     [view :input-container
-     ;; TODO show "n/m" which entry out of how many history entries you're on
      [view {:style [:input-caret :main-caret]}
-      "["
-      (inc pos)
-      "/"
-      count
-      "]"
-      ">"]
+      "[" (inc pos) "/" count "]>"]
      [code-mirror/code-mirror (reaction (:text @state))
       (merge
-       cm-options
+       default-cm-opts
        {:style {:height "auto"
                 :font-size 16
                 :flex 1
                 :padding "2px"}
-        :on-change set-text
-        :complete-word complete-word
-        :complete-atom complete-atom
-        :on-eval submit
-        :on-up go-up
-        :on-down go-down})]]))
+        :on-eval submit}
+       cm-opts)]]))
 
 (defn docs-view [docs]
   [view :docs
@@ -289,15 +285,27 @@
    :hist-pos 0
    :history ["{:a 2 {:b 3} 4}"]})
 
-(defn repl-main [execute complete-word get-docs state]
-  (let [;;state (r/atom initial-state)
-        add-input (partial swap! state handlers/add-input)
-        add-result (partial swap! state handlers/add-result)
-        go-up (partial swap! state handlers/go-up)
-        go-down (partial swap! state handlers/go-down)
-        clear-items (partial swap! state handlers/clear-items)
-        set-text (partial swap! state handlers/set-text)
-        add-log (partial swap! state handlers/add-log)
+;; TODO is there a macro or something that could do this cleaner?
+(defn make-handlers [state]
+  {:add-input (partial swap! state handlers/add-input)
+   :add-result (partial swap! state handlers/add-result)
+   :go-up (partial swap! state handlers/go-up)
+   :go-down (partial swap! state handlers/go-down)
+   :clear-items (partial swap! state handlers/clear-items)
+   :set-text (partial swap! state handlers/set-text)
+   :add-log (partial swap! state handlers/add-log)}
+  )
+
+(defn repl [& {:keys [execute complete-word get-docs state js-cm-opts on-cm-init]}]
+  (let [state (or state (r/atom initial-state))
+        {:keys
+         [add-input
+          add-result
+          go-up
+          go-down
+          clear-items
+          set-text
+          add-log]} (make-handlers state)
 
         items (subs/items state)
         complete-atom (r/atom nil)
@@ -322,19 +330,25 @@
        [repl-items @items]
        [repl-input
         (subs/current-text state)
-        submit complete-word
-        {:go-up go-up
-         :go-down go-down
+        submit
+        {:complete-word complete-word
+         :on-up go-up
+         :on-down go-down
          :complete-atom complete-atom
-         :set-text set-text}]
+         :on-change set-text
+         :js-cm-opts js-cm-opts
+         :on-cm-init on-cm-init
+         }]
        [completion-list
         @complete-atom
         ;; TODO this should also replace the text....
-        #(swap! complete-atom assoc :pos %)]
+        identity
+        #_(swap! complete-atom assoc :pos % :active true)]
        [docs-view
         @docs]])))
 
-(defn repl
+
+#_(defn repl
   ([execute complete-word get-docs]
    (repl-main execute complete-word get-docs (r/atom initial-state)))
   ([execute complete-word get-docs state]
