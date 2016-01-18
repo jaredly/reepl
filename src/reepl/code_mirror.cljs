@@ -12,6 +12,7 @@
             [cljsjs.codemirror.keymap.vim]
             [cljs.pprint :as pprint]))
 
+
 (defn cm-current-word [cm]
   (let [pos (.getCursor cm)
         back #js {:line (.-line pos)

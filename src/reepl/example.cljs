@@ -15,6 +15,7 @@
             [replumb.doc-maps :as docs]
             [cljs.repl :as repl]
             [reepl.parinferize :as parinferize]
+            [parinfer.codemirror.mode.clojure.clojure-parinfer]
 
             [quil.middleware :as m])
   (:import goog.net.XhrIo))
@@ -237,8 +238,6 @@
 (run-repl "(require '[reepl.show-value])" identity)
 (run-repl "(require '[cljs.reader])" identity)
 (run-repl "(require '[cljs.tools.reader])" identity)
-
-(js/setupClojureParinferMode js/CodeMirror)
 
 (main)
 (defonce -initing

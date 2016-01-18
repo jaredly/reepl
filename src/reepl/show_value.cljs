@@ -4,16 +4,14 @@
 
             [devtools.format :as devtools]
             [cljs.pprint :as pprint]
-            [reepl.helpers :as helpers]
-            )
+            [reepl.helpers :as helpers])
   (:require-macros
    [reagent.ratom :refer [reaction]]))
 
 (def styles
   {:value-head {:flex-direction :row}
    :inline-value {:display :inline-flex}
-   :value-toggle {
-                  :font-size 9
+   :value-toggle {:font-size 9
                   :padding 4
                   :cursor :pointer}
    :function {:color "#00a"}
@@ -35,8 +33,7 @@
 (defn recover-cljs-name [parts]
   (-> (str/join \. (butlast parts))
       (str \/ (last parts))
-      demunge
-      ))
+      demunge))
 
 (defn get-cljs-arities [fn]
   (map
@@ -74,19 +71,10 @@
 (defn show-fn [fn]
   [view
    :function
-   [text
-    :function-head
-    "fn "
-    (get-fn-name fn)
-    ]
-   [text
-    :function-arities
-    (str-fn-forms
-     (get-function-forms fn))]
-   [text
-    :function-body
+   [text :function-head "fn " (get-fn-name fn)]
+   [text :function-arities (str-fn-forms (get-function-forms fn))]
+   [text :function-body
     ;; TODO get the docs! that'd be so awesome
-
     ]])
 
 (defn show-str [val]

@@ -61,15 +61,21 @@
         (speak)
         (test-cljs)))
 
+(def foreign-libs
+  [{:file "parinfer/resources/public/codemirror/mode/clojure/clojure-parinfer.js"
+    :provides ["parinfer.codemirror.mode.clojure.clojure-parinfer"]}])
+
 (deftask dev []
   (set-env! :source-paths #{"src"})
-  (comp 
+  (comp
         (serve :dir ".")
         (watch)
         ;(speak)
         (reload :on-jsload 'reepl.example/main)
         (cljs-repl)
-        (cljs :source-map true :optimizations :none)
+        (cljs :source-map true
+              :compiler-options {:foreign-libs foreign-libs}
+              :optimizations :none)
         (sift
          :add-jar
          {'cljsjs/codemirror
@@ -85,8 +91,11 @@
 
 (deftask build []
   (set-env! :source-paths #{"src"})
-  (comp (cljs :source-map true :compiler-options {:asset-path "target/out"} :optimizations :none)
+  (comp (cljs :source-map true
+              :compiler-options {:asset-path "target/out"
+                                 :foreign-libs foreign-libs}
+              :optimizations :none)
         (sift :add-jar {'cljsjs/codemirror #"cljsjs/codemirror/development/codemirror.css"})
-	(sift :move {#"cljsjs/codemirror/development/codemirror.css" "vendor/codemirror/codemirror.css"})
-  ))
+        (sift :move {#"cljsjs/codemirror/development/codemirror.css" "vendor/codemirror/codemirror.css"})
+        ))
 

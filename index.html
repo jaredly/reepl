@@ -6,17 +6,6 @@
 <link rel="stylesheet" href="target/vendor/codemirror/codemirror.css">
 <body>
   <div id="container"></div>
-  <script>
-    // HAACK to get this loading properly
-    window.define = function (_, mod) {
-      window.setupClojureParinferMode = mod;
-    }
-    window.define.amd = true;
-  </script>
-  <script src="parinfer/resources/public/codemirror/mode/clojure/clojure-parinfer.js"></script>
-  <script>
-    window.define = null;
-  </script>
   <script src="vendor/inlet.js"></script>
   <script src="target/main.js"></script>
 </body>
