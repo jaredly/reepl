@@ -75,14 +75,6 @@
          {'cljsjs/codemirror
           #"cljsjs/codemirror/development/codemirror.css"})
         (sift
-         :add-jar
-         {'cljsjs/codemirror
-          #"cljsjs/codemirror/common/addon/hint/show-hint.css"})
-        (sift
-         :move
-         {#"cljsjs/codemirror/common/addon/hint/show-hint.css"
-          "vendor/codemirror/codemirror-show-hint.css"})
-        (sift
          :move
          {#"cljsjs/codemirror/development/codemirror.css"
           "vendor/codemirror/codemirror.css"})))

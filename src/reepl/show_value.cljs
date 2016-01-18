@@ -122,20 +122,27 @@
 (defn show-value [val config]
   (if (var? val)
     [view :inline-value (show-str val)]
-    (let [header (devtools/header-api-call val config)]
-    (if-not header
-      [view :inline-value (show-str val)]
-      (if-not (devtools/has-body-api-call val config)
-        [view :inline-value (show-el header)]
-        (let [open (r/atom false)]
-          (fn [_ _]
-            (let [is-open @open]
-              [view :value-with-body
-               [view :value-head
-                [view {:on-click #(swap! open not)
-                       :style :value-toggle}
-                 (if is-open "▼" "▶")]
-                (show-el header)]
-               (when is-open
-                 (show-el (devtools/body-api-call val config)))
-               ]))))))))
+    (let [header (try
+                   (devtools/header-api-call val config)
+                   (catch js/Error e
+                     e))]
+      (cond
+        (not header)
+        [view :inline-value (show-str val)]
+        (instance? js/Error header)
+        [view :inline-value "Error expanding lazy value"]
+        :else
+        (if-not (devtools/has-body-api-call val config)
+          [view :inline-value (show-el header)]
+          (let [open (r/atom false)]
+            (fn [_ _]
+              (let [is-open @open]
+                [view :value-with-body
+                 [view :value-head
+                  [view {:on-click #(swap! open not)
+                         :style :value-toggle}
+                   (if is-open "▼" "▶")]
+                  (show-el header)]
+                 (when is-open
+                   (show-el (devtools/body-api-call val config)))
+                 ]))))))))
