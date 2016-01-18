@@ -36,6 +36,12 @@
 
 (def view (partial helpers/view styles))
 
+(defn maybe-fn-docs [fn]
+  (let [doc (replumb/doc-from-sym fn)]
+    (when (:forms doc)
+      (with-out-str
+        (replumb/print-doc doc)))))
+
 (defn main-view []
   [view :main
    [view :box
@@ -47,7 +53,7 @@
      ;; TODO change name
      :show-value-opts
      {:showers [show-devtools/show-devtools
-                show-function/show-fn]}
+                (partial show-function/show-fn-with-docs maybe-fn-docs)]}
      :js-cm-opts {:mode "clojure-parinfer"
                   :keyMap "vim"
                   :showCursorWhenSelecting true}

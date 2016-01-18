@@ -166,20 +166,78 @@
            #(-> [% (str %) (str %)])
            (filter matches? names))))))
 
+(defn get-forms [m]
+  (cond
+    (:forms m) (:forms m)
+    (:arglists m) (let [arglists (:arglists m)]
+                    (if (or (:macro m)
+                            (:repl-special-function m))
+                      arglists
+                      (if (= 'quote (first arglists))
+                        (second arglists)
+                        arglists)))))
+
+;; Copied & modified from cljs.repl/print-doc
+(defn get-doc [m]
+  (merge {:name (str (when-let [ns (:ns m)] (str ns "/")) (:name m))
+          :type (cond
+                  (:protocol m) :protocol
+                  (:special-form m) :special-form
+                  (:macro m) :macro
+                  (:repl-special-function m) :repl-special-function
+                  :else :normal)
+          :forms (get-forms m)
+          :doc (:doc m)}
+         (if (:special-form m)
+           {:please-see (if (contains? m :url)
+                          (when (:url m)
+                            (str "http://clojure.org/" (:url m)))
+                          (str "http://clojure.org/special_forms#" (:name m)))}
+           (when (:protocol m)
+             {:protocol-methods (:methods m)}))))
+
+(defn doc-from-sym [sym]
+  (cond
+    (docs/special-doc-map sym) (get-doc (docs/special-doc sym))
+    (docs/repl-special-doc-map sym) (get-doc (docs/repl-special-doc sym))
+    (ast/namespace
+     @replumb.repl/st sym) (get-doc
+                            (select-keys
+                             (ast/namespace @replumb.repl/st sym)
+                             [:name :doc]))
+    :else (get-doc
+           (replumb.repl/get-var
+            nil
+            (replumb.repl/empty-analyzer-env) sym))))
+
+(def type-name
+  {:protocol "Protocol"
+   :special-form "Special Form"
+   :macro "Macro"
+   :repl-special-function "REPL Special Function"})
+
+;; Copied & modified from cljs.repl/print-doc
+(defn print-doc [doc]
+  (println (:name doc))
+  (if-not (= :normal (:type doc))
+    (println (type-name (:type doc))))
+  (when (:forms doc)
+    (prn (:forms doc)))
+  (when (:please-see doc)
+    (println (str "\n  Please see " (:please-see doc))))
+  (when (:doc doc)
+    (println (:doc doc)))
+  (when (:methods doc)
+    (doseq [[name {:keys [doc arglists]}] (:methods doc)]
+      (println)
+      (println " " name)
+      (println " " arglists)
+      (when doc
+        (println " " doc)))))
+
 (defn process-doc
   "Get the documentation for a symbol. Copied & modified from replumb."
   [sym]
   (when sym
     (with-out-str
-      (cond
-        (docs/special-doc-map sym) (repl/print-doc (docs/special-doc sym))
-        (docs/repl-special-doc-map sym) (repl/print-doc (docs/repl-special-doc sym))
-        (ast/namespace @replumb.repl/st sym)
-        (repl/print-doc
-         (select-keys
-          (ast/namespace @replumb.repl/st sym)
-          [:name :doc]))
-        :else (repl/print-doc
-               (replumb.repl/get-var
-                nil
-                (replumb.repl/empty-analyzer-env) sym))))))
+      (print-doc (doc-from-sym sym)))))

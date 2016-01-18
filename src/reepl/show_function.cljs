@@ -14,7 +14,6 @@
 (def text (partial helpers/text styles))
 (def button (partial helpers/button styles))
 
-
 (def cljs-fn-prefix
   "cljs$core$IFn$_invoke$arity$")
 
@@ -30,7 +29,6 @@
 
 (defn get-fn-summary [fn]
   (let [source (str fn)
-        ;; lines (str/split string "\n")
         args (second (re-find #"\(([^\)]+)\)" source))]
     (map demunge
          (str/split args \,))))
@@ -54,12 +52,21 @@
   (str
    \[ (str/join "] [" (map (partial str/join " ") forms)) \]))
 
-(defn show-fn [fn]
+(defn show-fn-with-docs [get-doc fn _ _]
   (when (= js/Function (type fn))
-    [view
-     :function
-     [text :function-head "fn " (get-fn-name fn)]
-     [text :function-arities (str-fn-forms (get-function-forms fn))]
-     [text :function-body
-      ;; TODO get the docs! that'd be so awesome
-      ]]))
+    (let [docs (get-doc (symbol (get-fn-name fn)))
+          is-native-fn (.match (str fn) #"\{ \[native code\] \}$" )]
+      (if docs
+        [view
+         :function
+         [text :function-docs
+          docs]]
+        [view
+         :function
+         [text :function-head "fn " (get-fn-name fn)]
+         [text :function-arities (str-fn-forms (get-function-forms fn))]
+         [text :function-body
+          (when is-native-fn "[native code]")]]))))
+
+(defn show-fn [f config show-value]
+  (show-fn-with-docs (fn [_] nil) f config show-value))
