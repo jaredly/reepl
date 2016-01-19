@@ -57,15 +57,13 @@
 
    :docs {:height 200
           :overflow :auto
-          :padding "5px 10px"
-          }
+          :padding "5px 10px"}
    :docs-empty {:color "#ccc"
                 :padding "5px 10px"}
 
    :input-container {:flex-direction :row
                      :border-top "2px solid #eee"
-                     :border-bottom "2px solid #eee"
-                     }
+                     :border-bottom "2px solid #eee"}
    :main-caret {:padding "8px 5px 8px 10px"
                 :margin-right 0
                 :flex-direction :row}
@@ -77,16 +75,6 @@
 (def view (partial helpers/view styles))
 (def text (partial helpers/text styles))
 (def button (partial helpers/button styles))
-
-(def intro-message
-  [text :intro-message
-   [text {:style {:font-weight :bold
-                  :font-size "1.2em"}}
-    "Reepl: "]
-   "the cljs Read-eval-print-loop that really understands you.
-  Type "
-   [text :intro-code ":cljs/clear"]
-   " to clear the history"])
 
 (defn is-valid-cljs? [source]
   (try

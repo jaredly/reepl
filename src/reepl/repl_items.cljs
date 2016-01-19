@@ -18,9 +18,8 @@
 (def styles
   {:repl-items {:flex 1
                 :overflow :auto
-                :height 500
-                :flex-shrink 1
-                }
+                :flex-basis 0
+                :flex-shrink 1}
    :repl-item {:flex-direction :row
                :padding "3px 5px"}
 
