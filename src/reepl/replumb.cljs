@@ -20,6 +20,7 @@
 
             [cljs.tools.reader.reader-types :refer [string-push-back-reader]]
             [cljs.tools.reader]
+            [cljs.tagged-literals :as tags]
 
             [quil.middleware :as m])
   (:import goog.net.XhrIo))
@@ -48,22 +49,76 @@
           ;; :verbose true
           :no-pr-str-on-value true}))
 
-(defn fix-ns-do [text]
-  (let [rr (string-push-back-reader text)
-        form (cljs.tools.reader/read rr)
-        is-ns (and (sequential? form)
-                   (= 'ns (first form)))
-        ;; TODO this is a bit dependent on tools.reader internals...
-        s-pos (.-s-pos (.-rdr rr))]
-    (js/console.log is-ns form s-pos)
-    (if-not is-ns
-      text
+(defn find-last-expr-pos [text]
+  ;; parse #js {} correctly
+  (binding [cljs.tools.reader/*data-readers* tags/*cljs-data-readers*]
+    (let [rr (string-push-back-reader text)
+          ;; get a unique js object as a sigil
+          eof (js-obj)
+          read #(cljs.tools.reader/read {:eof eof} rr)
+          ]
+      (loop [last-pos 0 second-pos 0 last-form nil second-form nil]
+        (let [form (read)
+              new-pos (.-s-pos (.-rdr rr))]
+          (if (identical? eof form)
+            second-pos;; second-form]
+            (recur new-pos last-pos form last-form)))))))
+
+(defn make-last-expr-set-val [text js-name]
+  (let [last-pos (find-last-expr-pos text)]
+    (js/console.log last-pos text)
+    (when-not (= last-pos 0)
       (str
-       (.slice text 0 s-pos)
-       "(do "
-       (.slice text s-pos)
+       (.slice text 0 last-pos)
+       "(aset js/window \"" js-name "\" "
+       (.slice text last-pos)
        ")"
        ))))
+
+(defn jsc-run [source cb]
+  (jsc/eval-str replumb.repl/st
+                source
+                'stuff
+                {:eval (fn a [& b]
+                         (js/console.log "eval source" b)
+                         (apply jsc/js-eval b))
+                 :ns (replumb.repl/current-ns)
+                 :context :statement
+                 :def-emits-var true}
+                (fn [result]
+                  (swap! replumb.repl/app-env assoc :current-ns (:ns result))
+                  (if (contains? result :error)
+                    (cb false (:error result))
+                    (cb true (aget js/window "last_repl_value"))))))
+
+;; Trying to get expressions + statements to play well together
+;; TODO is this a better way? The `do' stuff seems to work alright ... although
+;; it won't work if there are other `ns' statements inside there...
+(defn run-repl-experimental* [text opts cb]
+  (let [fixed (make-last-expr-set-val text "last_repl_value")]
+    (if fixed
+      (jsc-run fixed cb)
+      (replumb/read-eval-call
+       opts #(cb (replumb/success? %) (replumb/unwrap-result %)) text))))
+
+(defn fix-ns-do [text]
+  ;; parse #js {} correctly
+  (binding [cljs.tools.reader/*data-readers* tags/*cljs-data-readers*]
+    (let [rr (string-push-back-reader text)
+          form (cljs.tools.reader/read rr)
+          is-ns (and (sequential? form)
+                     (= 'ns (first form)))
+          ;; TODO this is a bit dependent on tools.reader internals...
+          s-pos (.-s-pos (.-rdr rr))]
+      (js/console.log is-ns form s-pos)
+      (if-not is-ns
+        (str "(do " text ")")
+        (str
+         (.slice text 0 s-pos)
+         "(do "
+         (.slice text s-pos)
+         ")"
+         )))))
 
 (defn run-repl* [text opts cb]
   (replumb/read-eval-call
@@ -71,16 +126,11 @@
    #(cb
      (replumb/success? %)
      (replumb/unwrap-result %))
-   (fix-ns-do text)
-   ;; this breaks `ns' declarations... :(
-   #_(if-not (= -1 (.indexOf text "\n"))
-     ;; For multiline inputs, wrap in a `do` in case.
-     (str "(do " text ")")
-     text)))
+   (fix-ns-do text)))
 
 (defn run-repl
-  ([text cb] (run-repl* text replumb-opts cb))
-  ([text opts cb] (run-repl* text (merge replumb-opts opts) cb)))
+  ([text cb] (run-repl-experimental* text replumb-opts cb))
+  ([text opts cb] (run-repl-experimental* text (merge replumb-opts opts) cb)))
 
 (defn compare-completion
   "The comparison algo for completions

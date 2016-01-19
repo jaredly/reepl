@@ -83,12 +83,16 @@
 
 (def pi-count (atom 0))
 
-#_(defn jsc-run [source cb]
-  (jsc/eval-str replumb.repl/st
+(def my-st (jsc/empty-state))
+
+(defn jsc-run [source cb]
+  (jsc/eval-str my-st
                 source
                 'stuff
-                {:eval
-                 jsc/js-eval
+                {:eval jsc/js-eval
+                 :ns 'cljs.user
+                 :context :statement
+                 :def-emits-var true
                  }
                 (fn [result]
                   (if (contains? result :error)
