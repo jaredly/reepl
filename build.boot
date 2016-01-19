@@ -42,7 +42,7 @@
 (require 'boot-figwheel)
 (refer 'boot-figwheel :rename '{cljs-repl fw-cljs-repl})
 
-(def +version+ "1.0")
+(def +version+ "1.0.1")
 (bootlaces! +version+)
 
 (task-options!
