@@ -9,6 +9,8 @@
             [reagent.core :as r]
             [reepl.code-mirror :as code-mirror]
             [reepl.show-value :refer [show-value]]
+            [reepl.repl-items :refer [repl-items]]
+            [reepl.completions :refer [completion-list]]
 
             [reepl.handlers :as handlers]
             [reepl.subs :as subs]
@@ -60,14 +62,6 @@
    :docs-empty {:color "#ccc"
                 :padding "5px 10px"}
 
-   :repl-items {:flex 1
-                :overflow :auto
-                :height 500
-                :flex-shrink 1
-                }
-   :repl-item {:flex-direction :row
-               :padding "3px 5px"}
-
    :input-container {:flex-direction :row
                      :border-top "2px solid #eee"
                      :border-bottom "2px solid #eee"
@@ -76,31 +70,8 @@
                 :margin-right 0
                 :flex-direction :row}
 
-   :input-item {}
-   :output-item {}
-   :error-item {:color :red
-                :padding "5px 10px"}
-   :underlying-error {:margin-left 10}
-   :caret {:color "#aaf"
-           :font-weight "bold"
-           :margin-right 5
-           :margin-left 5
-           :font-size 11
-           :padding-top 2
-           :flex-direction :row
-           }
    :input-caret {:color "#55f"
                  :margin-right 10}
-   :input-text {:flex 1
-                :word-wrap :break-word}
-   :output-caret {}
-   :output-value {:flex 1
-                  :word-wrap :break-word}
-   :repl-input {:padding "5px 10px"
-                :font-family "monospace"
-                :font-size "1.3em"
-                :border-bottom "1px solid #aaa"}
-   :clear-button {}
    })
 
 (def view (partial helpers/view styles))
@@ -116,92 +87,6 @@
   Type "
    [text :intro-code ":cljs/clear"]
    " to clear the history"])
-
-(defmulti repl-item (fn [item opts] (:type item)))
-
-(defmethod repl-item :input
-  [{:keys [num text]} _]
-  [view {:style [:repl-item :input-item]}
-   [view {:style [:caret :input-caret]} "[" num "]>"]
-   [view :input-text
-    [code-mirror/colored-text text]]])
-
-(defmethod repl-item :log
-  [{:keys [value]} opts]
-  [view {:style [:repl-item :log-item]}
-   [show-value value nil opts]])
-
-(defmethod repl-item :error
-  [{:keys [value]} opts]
-  (let [message (.-message value)
-        underlying (.-cause value)]
-    [view {:style [:repl-item :output-item :error-item]}
-     message
-     (when underlying
-       ;; TODO also show stack?
-       [text :underlying-error (.-message underlying)])
-     ]))
-
-(defmethod repl-item :output
-  [{:keys [value]} opts]
-  [view {:style [:repl-item :output-item]}
-   [view {:style [:caret :output-caret]} "<"]
-   [view :output-value [show-value value nil opts]]])
-
-(defn repl-items [_]
-  (r/create-class
-   {:component-did-update
-    (fn [this]
-      (let [el (r/dom-node this)]
-        (set! (.-scrollTop el) (.-scrollHeight el))))
-    :reagent-render
-    (fn [items opts]
-      (into
-       [view :repl-items
-        intro-message]
-       (map #(repl-item % opts) items)))}))
-
-(def canScrollIfNeeded
-  (not (nil? (.scrollIntoViewIfNeeded js/document.body))))
-
-(defn completion-item [text is-selected is-active set-active]
-  (r/create-class
-   {:component-did-update
-    (fn [this [_ _ old-is-selected]]
-      (let [[_ _ is-selected] (r/argv this)]
-        (if (and (not old-is-selected)
-                 is-selected)
-          (if canScrollIfNeeded
-            (.scrollIntoViewIfNeeded (r/dom-node this) false)
-            (.scrollIntoView (r/dom-node this))))))
-    :reagent-render
-    (fn [text is-selected is-active set-active]
-      [view {:on-click set-active
-             :style [:completion-item
-                     (and is-selected
-                          (if is-active
-                            :completion-active
-                            :completion-selected))]}
-       text])}))
-
-(defn completion-list [{:keys [pos list active show-all]} set-active]
-  (let [items (map-indexed
-               #(-> [completion-item
-                     (get %2 2)
-                     (= %1 pos)
-                     active
-                     (partial set-active %1)])
-               list)
-        ]
-    [view :completion-container
-     (if show-all
-       (into [view :completion-show-all] items))
-     (if (empty? items)
-       [view :completion-empty "This is where completions show up"]
-       (into
-        [view :completion-list]
-        items))
-     ]))
 
 (defn is-valid-cljs? [source]
   (try

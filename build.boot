@@ -9,6 +9,7 @@
     [pandeiro/boot-http          "0.6.3"           :scope "test"]
     [crisptrutski/boot-cljs-test "0.2.1"  :scope "test"]
     [zilti/boot-typed "0.1.1" :scope "test"]
+    [adzerk/bootlaces "0.1.13"]
 
     [replumb "0.1.5-SNAPSHOT"]
     [parinfer "0.2.3"]
@@ -31,6 +32,7 @@
     ])
 
 (require
+  '[adzerk.bootlaces :refer :all]
   '[adzerk.boot-cljs      :refer [cljs]]
   '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
   '[adzerk.boot-reload    :refer [reload]]
@@ -40,7 +42,16 @@
 (require 'boot-figwheel)
 (refer 'boot-figwheel :rename '{cljs-repl fw-cljs-repl})
 
+(def +version+ "1.0")
+(bootlaces! +version+)
+
 (task-options!
+ pom {:project 'reepl
+      :version +version+
+      :description "A configurable in-browser clojurescript REPL"
+      :url "https://github.com/jaredly/reepl"
+      :scm {:url "https://github.com/adzerk/bootlaces"}
+      :license {"ISC License" "https://opensource.org/licenses/ISC"}}
  figwheel {:build-ids  ["dev"]
            :all-builds [{:id "dev"
                          :compiler {:main 'reepl.example
