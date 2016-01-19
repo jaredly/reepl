@@ -67,7 +67,7 @@ return reepl.core.repl_item.call(null,p1__17004_SHARP_,opts);
 }),items));
 })], null));
 });
-reepl.core.canScrollIfNeeded = !((document.body.scrollIntoViewIfNeeded() == null));
+reepl.core.canScrollIfNeeded = !((document.body.scrollIntoViewIfNeeded == null));
 reepl.core.completion_item = (function reepl$core$completion_item(text,is_selected,is_active,set_active){
 return reagent.core.create_class.call(null,new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"component-did-update","component-did-update",-1468549173),(function (this$,p__17008){
 var vec__17009 = p__17008;

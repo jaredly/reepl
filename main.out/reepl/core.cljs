@@ -162,7 +162,7 @@
        (map #(repl-item % opts) items)))}))
 
 (def canScrollIfNeeded
-  (not (nil? (.scrollIntoViewIfNeeded js/document.body))))
+  (not (nil? (.-scrollIntoViewIfNeeded js/document.body))))
 
 (defn completion-item [text is-selected is-active set-active]
   (r/create-class
