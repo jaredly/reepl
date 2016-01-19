@@ -171,7 +171,6 @@
       (let [[_ _ is-selected] (r/argv this)]
         (if (and (not old-is-selected)
                  is-selected)
-          ;; (js/console.log "selecting" text is-selected old-is-selected)
           (if canScrollIfNeeded
             (.scrollIntoViewIfNeeded (r/dom-node this) false)
             (.scrollIntoView (r/dom-node this))))))
@@ -260,6 +259,7 @@
     [view :input-container
      [view {:style [:input-caret :main-caret]}
       "[" (inc pos) "/" count "]>"]
+     ^{:key (str (hash (:js-cm-opts cm-opts)))}
      [code-mirror/code-mirror (reaction (:text @state))
       (merge
        default-cm-opts
@@ -339,7 +339,13 @@
 
     (set-print! add-log)
 
-    (fn []
+    (fn [& {:keys [execute
+                   complete-word
+                   get-docs
+                   state
+                   show-value-opts
+                   js-cm-opts
+                   on-cm-init]}]
       [view :container
        [repl-items @items show-value-opts]
        [repl-input

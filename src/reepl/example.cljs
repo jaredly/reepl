@@ -42,6 +42,28 @@
       (with-out-str
         (replumb/print-doc doc)))))
 
+(def default-settings
+  {:vim false
+   :parinfer true})
+
+(defn get-settings []
+  (let [val js/localStorage.reeplSettings]
+    (if-not val
+      default-settings
+      (try
+        (js->clj (js/JSON.parse val))
+        (catch js/Error _
+          default-settings)))))
+
+(defn save-settings [settings]
+  (let [str (js/JSON.stringify (clj->js settings))]
+    (aset js/localStorage "reeplSettings" str)))
+
+(defonce
+  settings (r/atom (get-settings)))
+
+(def pi-count (atom 0))
+
 (defn main-view []
   [view :main
    [view :box
@@ -54,10 +76,31 @@
      :show-value-opts
      {:showers [show-devtools/show-devtools
                 (partial show-function/show-fn-with-docs maybe-fn-docs)]}
-     :js-cm-opts {:mode "clojure-parinfer"
-                  :keyMap "vim"
+     :js-cm-opts {:mode (if (:parinfer @settings)
+                          "clojure-parinfer"
+                          "clojure")
+                  :keyMap (if (:vim @settings) "vim" "default")
                   :showCursorWhenSelecting true}
-     :on-cm-init #(parinfer/parinferize! % :repl-infer :indent-mode)]]])
+     :on-cm-init #(when (:parinfer @settings)
+                    (parinfer/parinferize! % (swap! pi-count inc)
+                                           :indent-mode (.getValue %)))]
+    [view :bottom
+     [:label
+      (:label styles)
+      [:input {
+               :type "checkbox"
+               :checked (:vim @settings)
+               :on-change #(swap! settings update :vim not)
+               }]
+      "Vim"]
+     [:label
+      (:label styles)
+      [:input {:checked (:parinfer @settings)
+               :type "checkbox"
+               :on-change #(swap! settings update :parinfer not)
+               }]
+      "Parinfer"]
+     ]]])
 
 (defn main []
   (js/console.log "reload!")

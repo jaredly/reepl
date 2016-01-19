@@ -96,7 +96,7 @@
   (set-env! :source-paths #{"src"})
   (set-env! :asset-paths #{"static"})
   (comp
-   (target :dir #{"target"})
+   (target :dir #{"build"})
    (cljs :source-map true
          :compiler-options {:asset-path "target/out"
                             :foreign-libs foreign-libs}
