@@ -13,7 +13,7 @@
             [cljs.pprint :as pprint]))
 
 ;; TODO can we avoid the global state modification here?
-((aget js/CodeMirror "registerHelper")
+(js/CodeMirror.registerHelper
  "wordChars"
  "clojure"
  #"[^\s\(\)\[\]\{\},`']")
@@ -84,7 +84,9 @@
     to cycle through."
   [{:keys [num pos active from to list initial-text] :as state}
    go-back? cm evt]
-  (when (and state (< 1 (count list)))
+  (when (and state (or (< 1 (count list))
+                       (and (< 0 (count list))
+                            (not (= initial-text (get (first list) 2))))))
     (.preventDefault evt)
     (let [initial-active (= initial-text (get (first list) 2))
           [active pos] (if active

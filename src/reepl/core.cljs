@@ -324,7 +324,9 @@
         docs (reaction
               (let [{:keys [pos list] :as state} @complete-atom]
                 (when state
-                  (get-docs (first (get list pos))))))
+                  (let [sym (first (get list pos))]
+                    (when (symbol? sym)
+                      (get-docs sym))))))
         submit (fn [text]
                  (if (= ":cljs/clear" (.trim text))
                    (do

@@ -54,7 +54,7 @@
      :show-value-opts
      {:showers [show-devtools/show-devtools
                 (partial show-function/show-fn-with-docs maybe-fn-docs)]}
-     :js-cm-opts {:mode "clojure-parinfer"
+     :js-cm-opts {:mode "clojure"
                   :keyMap "vim"
                   :showCursorWhenSelecting true}
      :on-cm-init #(parinfer/parinferize! % :repl-infer :indent-mode)]]])

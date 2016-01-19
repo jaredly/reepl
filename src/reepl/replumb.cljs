@@ -8,6 +8,7 @@
             [reagent.core :as r]
             [quil.core :as q :include-macros true]
             [cljs.tools.reader]
+            [clojure.string :as str]
 
             [replumb.core :as replumb]
             [replumb.repl]
@@ -125,9 +126,29 @@
                  (filter matches?
                          publics))))))
 
+(defn js-attrs [obj]
+  (if-not obj
+    []
+    (let [constructor (.-constructor obj)
+        proto (js/Object.getPrototypeOf obj)]
+    (concat (js/Object.keys obj)
+            (when-not (= proto obj)
+              (js-attrs proto))))))
+
+(defn js-completion
+  [text]
+  (let [parts (vec (.split text "."))
+        completing (or (last parts) "")
+        prefix #(str "js/" (str/join "." (conj (vec (butlast parts)) %)))
+        possibles (js-attrs (reduce aget js/window (butlast parts)))]
+    (->> possibles
+         (filter #(not (= -1 (.indexOf % completing))))
+         (sort (partial compare-completion text))
+         (map #(-> [nil (prefix %) (prefix %)])))))
+
 ;; TODO fuzzy-match if there are no normal matches
-(defn process-apropos
-  "Tab completion. Copied w/ extensive modifications from replumb."
+(defn cljs-completion
+  "Tab completion. Copied w/ extensive modifications from replumb.repl/process-apropos."
   [text]
   (let [[only-ns text] (if-not (= -1 (.indexOf text "/"))
                          (.split text "/")
@@ -165,6 +186,12 @@
           (map
            #(-> [% (str %) (str %)])
            (filter matches? names))))))
+
+(defn process-apropos [text]
+  (if (= 0 (.indexOf text "js/"))
+    (js-completion (.slice text 3))
+    (cljs-completion text)
+    ))
 
 (defn get-forms [m]
   (cond
