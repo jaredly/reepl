@@ -18,6 +18,9 @@
             [parinfer-codemirror.editor :as parinfer]
             [parinfer.codemirror.mode.clojure.clojure-parinfer]
 
+            [cljs.tools.reader.reader-types :refer [string-push-back-reader]]
+            [cljs.tools.reader]
+
             [quil.middleware :as m])
   (:import goog.net.XhrIo))
 
@@ -45,16 +48,39 @@
           ;; :verbose true
           :no-pr-str-on-value true}))
 
-(defn run-repl [text cb]
+(defn fix-ns-do [text]
+  (let [rr (string-push-back-reader text)
+        form (cljs.tools.reader/read rr)
+        is-ns (and (sequential? form)
+                   (= 'ns (first form)))
+        ;; TODO this is a bit dependent on tools.reader internals...
+        s-pos (.-s-pos (.-rdr rr))]
+    (js/console.log is-ns form s-pos)
+    (if-not is-ns
+      text
+      (str
+       (.slice text 0 s-pos)
+       "(do "
+       (.slice text s-pos)
+       ")"
+       ))))
+
+(defn run-repl* [text opts cb]
   (replumb/read-eval-call
-   replumb-opts
+   opts
    #(cb
      (replumb/success? %)
      (replumb/unwrap-result %))
-   (if-not (= -1 (.indexOf text "\n"))
+   (fix-ns-do text)
+   ;; this breaks `ns' declarations... :(
+   #_(if-not (= -1 (.indexOf text "\n"))
      ;; For multiline inputs, wrap in a `do` in case.
      (str "(do " text ")")
      text)))
+
+(defn run-repl
+  ([text cb] (run-repl* text replumb-opts cb))
+  ([text opts cb] (run-repl* text (merge replumb-opts opts) cb)))
 
 (defn compare-completion
   "The comparison algo for completions

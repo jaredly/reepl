@@ -12,7 +12,7 @@ The cljs Read-eval-print-loop that really understands you
 `src/reepl/example.cljs` is the `main` on that page, and you can see how this lib can be used.
 
 ## Building yourself
-Grab the latest `boot` (version 2.5.5 at the time of writing), run `boot dev`, and then open `http://localhost:3000`.
+Grab the latest `boot` (version 2.5.5 at the time of writing), run `boot dev`, and then open `http://localhost:3002`.
 
 ## Things you can configure
 

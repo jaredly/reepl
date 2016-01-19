@@ -81,7 +81,7 @@
   (set-env! :asset-paths #{"static"})
   (comp
    (target :dir #{"target"})
-   (serve :dir "target")
+   (serve :dir "target" :port 3002)
    (watch)
    ;;(speak)
    (reload :on-jsload 'reepl.example/main)

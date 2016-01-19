@@ -59,6 +59,7 @@
 
 (def default-settings
   {:vim false
+   :warning-as-error true
    :parinfer true})
 
 (defn get-settings []
@@ -66,7 +67,8 @@
     (if-not val
       default-settings
       (try
-        (js->clj (js/JSON.parse val) :keywordize-keys true)
+        (merge default-settings
+               (js->clj (js/JSON.parse val) :keywordize-keys true))
         (catch js/Error _
           default-settings)))))
 
@@ -81,11 +83,23 @@
 
 (def pi-count (atom 0))
 
+#_(defn jsc-run [source cb]
+  (jsc/eval-str replumb.repl/st
+                source
+                'stuff
+                {:eval
+                 jsc/js-eval
+                 }
+                (fn [result]
+                  (if (contains? result :error)
+                    (cb false (:error result))
+                    (cb true (:value result))))))
+
 (defn main-view []
   [view :main
    [view :box
     [reepl/repl
-     :execute replumb/run-repl
+     :execute #(replumb/run-repl %1 {:warning-as-error (:warning-as-error @settings)} %2)
      :complete-word replumb/process-apropos
      :get-docs replumb/process-doc
      :state repl-state
@@ -120,6 +134,14 @@
               :on-change #(swap! settings update :parinfer not)
               }]
      "Parinfer"]
+    [:label
+     {:style (:label styles)}
+     [:input {:checked (:warning-as-error @settings)
+              :type "checkbox"
+              :style (:checkbox styles)
+              :on-change #(swap! settings update :warning-as-error not)
+              }]
+     "Warning as error"]
     [:a
      {:href "https://github.com/jaredly/reepl"
       :target :_blank
