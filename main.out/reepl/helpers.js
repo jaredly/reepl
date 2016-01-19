@@ -32,14 +32,14 @@ return cljs.core.merge.call(null,new cljs.core.PersistentArrayMap(null, 1, [new 
 });
 reepl.helpers.better_el = (function reepl$helpers$better_el(var_args){
 var args__7518__auto__ = [];
-var len__7511__auto___11916 = arguments.length;
-var i__7512__auto___11917 = (0);
+var len__7511__auto___15576 = arguments.length;
+var i__7512__auto___15577 = (0);
 while(true){
-if((i__7512__auto___11917 < len__7511__auto___11916)){
-args__7518__auto__.push((arguments[i__7512__auto___11917]));
+if((i__7512__auto___15577 < len__7511__auto___15576)){
+args__7518__auto__.push((arguments[i__7512__auto___15577]));
 
-var G__11918 = (i__7512__auto___11917 + (1));
-i__7512__auto___11917 = G__11918;
+var G__15578 = (i__7512__auto___15577 + (1));
+i__7512__auto___15577 = G__15578;
 continue;
 } else {
 }
@@ -51,38 +51,38 @@ return reepl.helpers.better_el.cljs$core$IFn$_invoke$arity$variadic((arguments[(
 });
 
 reepl.helpers.better_el.cljs$core$IFn$_invoke$arity$variadic = (function (dom_el,default_style,styles,props,children){
-var vec__11915 = ((((props instanceof cljs.core.Keyword)) || (cljs.core.map_QMARK_.call(null,props)))?new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [props,children], null):new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [null,cljs.core.concat.call(null,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [props], null),children)], null));
-var props__$1 = cljs.core.nth.call(null,vec__11915,(0),null);
-var children__$1 = cljs.core.nth.call(null,vec__11915,(1),null);
+var vec__15575 = ((((props instanceof cljs.core.Keyword)) || (cljs.core.map_QMARK_.call(null,props)))?new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [props,children], null):new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [null,cljs.core.concat.call(null,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [props], null),children)], null));
+var props__$1 = cljs.core.nth.call(null,vec__15575,(0),null);
+var children__$1 = cljs.core.nth.call(null,vec__15575,(1),null);
 return cljs.core.vec.call(null,cljs.core.concat.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [dom_el,reepl.helpers.parse_props.call(null,styles,default_style,props__$1)], null),children__$1));
 });
 
 reepl.helpers.better_el.cljs$lang$maxFixedArity = (4);
 
-reepl.helpers.better_el.cljs$lang$applyTo = (function (seq11910){
-var G__11911 = cljs.core.first.call(null,seq11910);
-var seq11910__$1 = cljs.core.next.call(null,seq11910);
-var G__11912 = cljs.core.first.call(null,seq11910__$1);
-var seq11910__$2 = cljs.core.next.call(null,seq11910__$1);
-var G__11913 = cljs.core.first.call(null,seq11910__$2);
-var seq11910__$3 = cljs.core.next.call(null,seq11910__$2);
-var G__11914 = cljs.core.first.call(null,seq11910__$3);
-var seq11910__$4 = cljs.core.next.call(null,seq11910__$3);
-return reepl.helpers.better_el.cljs$core$IFn$_invoke$arity$variadic(G__11911,G__11912,G__11913,G__11914,seq11910__$4);
+reepl.helpers.better_el.cljs$lang$applyTo = (function (seq15570){
+var G__15571 = cljs.core.first.call(null,seq15570);
+var seq15570__$1 = cljs.core.next.call(null,seq15570);
+var G__15572 = cljs.core.first.call(null,seq15570__$1);
+var seq15570__$2 = cljs.core.next.call(null,seq15570__$1);
+var G__15573 = cljs.core.first.call(null,seq15570__$2);
+var seq15570__$3 = cljs.core.next.call(null,seq15570__$2);
+var G__15574 = cljs.core.first.call(null,seq15570__$3);
+var seq15570__$4 = cljs.core.next.call(null,seq15570__$3);
+return reepl.helpers.better_el.cljs$core$IFn$_invoke$arity$variadic(G__15571,G__15572,G__15573,G__15574,seq15570__$4);
 });
 reepl.helpers.view = cljs.core.partial.call(null,reepl.helpers.better_el,new cljs.core.Keyword(null,"div","div",1057191632),reepl.helpers.view_style);
 reepl.helpers.text = cljs.core.partial.call(null,reepl.helpers.better_el,new cljs.core.Keyword(null,"span","span",1394872991),reepl.helpers.text_style);
 reepl.helpers.button = cljs.core.partial.call(null,reepl.helpers.better_el,new cljs.core.Keyword(null,"button","button",1456579943),reepl.helpers.button_style);
 reepl.helpers.hoverable = (function reepl$helpers$hoverable(var_args){
 var args__7518__auto__ = [];
-var len__7511__auto___11924 = arguments.length;
-var i__7512__auto___11925 = (0);
+var len__7511__auto___15584 = arguments.length;
+var i__7512__auto___15585 = (0);
 while(true){
-if((i__7512__auto___11925 < len__7511__auto___11924)){
-args__7518__auto__.push((arguments[i__7512__auto___11925]));
+if((i__7512__auto___15585 < len__7511__auto___15584)){
+args__7518__auto__.push((arguments[i__7512__auto___15585]));
 
-var G__11926 = (i__7512__auto___11925 + (1));
-i__7512__auto___11925 = G__11926;
+var G__15586 = (i__7512__auto___15585 + (1));
+i__7512__auto___15585 = G__15586;
 continue;
 } else {
 }
@@ -97,43 +97,43 @@ reepl.helpers.hoverable.cljs$core$IFn$_invoke$arity$variadic = (function (config
 var hovered = reagent.core.atom.call(null,false);
 return ((function (hovered){
 return (function() { 
-var G__11927__delegate = function (p__11921,children__$1){
-var map__11922 = p__11921;
-var map__11922__$1 = ((((!((map__11922 == null)))?((((map__11922.cljs$lang$protocol_mask$partition0$ & (64))) || (map__11922.cljs$core$ISeq$))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__11922):map__11922);
-var style = cljs.core.get.call(null,map__11922__$1,new cljs.core.Keyword(null,"style","style",-496642736));
-var hover_style = cljs.core.get.call(null,map__11922__$1,new cljs.core.Keyword(null,"hover-style","hover-style",976094077));
-var el = cljs.core.get.call(null,map__11922__$1,new cljs.core.Keyword(null,"el","el",-1618201118));
-var props = cljs.core.get.call(null,map__11922__$1,new cljs.core.Keyword(null,"props","props",453281727));
-return cljs.core.into.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [el,cljs.core.assoc.call(null,props,new cljs.core.Keyword(null,"style","style",-496642736),(cljs.core.truth_(cljs.core.deref.call(null,hovered))?cljs.core.merge.call(null,style,hover_style):style),new cljs.core.Keyword(null,"on-mouse-over","on-mouse-over",-858472552),((function (map__11922,map__11922__$1,style,hover_style,el,props,hovered){
+var G__15587__delegate = function (p__15581,children__$1){
+var map__15582 = p__15581;
+var map__15582__$1 = ((((!((map__15582 == null)))?((((map__15582.cljs$lang$protocol_mask$partition0$ & (64))) || (map__15582.cljs$core$ISeq$))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__15582):map__15582);
+var style = cljs.core.get.call(null,map__15582__$1,new cljs.core.Keyword(null,"style","style",-496642736));
+var hover_style = cljs.core.get.call(null,map__15582__$1,new cljs.core.Keyword(null,"hover-style","hover-style",976094077));
+var el = cljs.core.get.call(null,map__15582__$1,new cljs.core.Keyword(null,"el","el",-1618201118));
+var props = cljs.core.get.call(null,map__15582__$1,new cljs.core.Keyword(null,"props","props",453281727));
+return cljs.core.into.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [el,cljs.core.assoc.call(null,props,new cljs.core.Keyword(null,"style","style",-496642736),(cljs.core.truth_(cljs.core.deref.call(null,hovered))?cljs.core.merge.call(null,style,hover_style):style),new cljs.core.Keyword(null,"on-mouse-over","on-mouse-over",-858472552),((function (map__15582,map__15582__$1,style,hover_style,el,props,hovered){
 return (function (){
 cljs.core.reset_BANG_.call(null,hovered,true);
 
 return null;
-});})(map__11922,map__11922__$1,style,hover_style,el,props,hovered))
-,new cljs.core.Keyword(null,"on-mouse-out","on-mouse-out",643448647),((function (map__11922,map__11922__$1,style,hover_style,el,props,hovered){
+});})(map__15582,map__15582__$1,style,hover_style,el,props,hovered))
+,new cljs.core.Keyword(null,"on-mouse-out","on-mouse-out",643448647),((function (map__15582,map__15582__$1,style,hover_style,el,props,hovered){
 return (function (){
 cljs.core.reset_BANG_.call(null,hovered,false);
 
 return null;
-});})(map__11922,map__11922__$1,style,hover_style,el,props,hovered))
+});})(map__15582,map__15582__$1,style,hover_style,el,props,hovered))
 )], null),children__$1);
 };
-var G__11927 = function (p__11921,var_args){
+var G__15587 = function (p__15581,var_args){
 var children__$1 = null;
 if (arguments.length > 1) {
-var G__11928__i = 0, G__11928__a = new Array(arguments.length -  1);
-while (G__11928__i < G__11928__a.length) {G__11928__a[G__11928__i] = arguments[G__11928__i + 1]; ++G__11928__i;}
-  children__$1 = new cljs.core.IndexedSeq(G__11928__a,0);
+var G__15588__i = 0, G__15588__a = new Array(arguments.length -  1);
+while (G__15588__i < G__15588__a.length) {G__15588__a[G__15588__i] = arguments[G__15588__i + 1]; ++G__15588__i;}
+  children__$1 = new cljs.core.IndexedSeq(G__15588__a,0);
 } 
-return G__11927__delegate.call(this,p__11921,children__$1);};
-G__11927.cljs$lang$maxFixedArity = 1;
-G__11927.cljs$lang$applyTo = (function (arglist__11929){
-var p__11921 = cljs.core.first(arglist__11929);
-var children__$1 = cljs.core.rest(arglist__11929);
-return G__11927__delegate(p__11921,children__$1);
+return G__15587__delegate.call(this,p__15581,children__$1);};
+G__15587.cljs$lang$maxFixedArity = 1;
+G__15587.cljs$lang$applyTo = (function (arglist__15589){
+var p__15581 = cljs.core.first(arglist__15589);
+var children__$1 = cljs.core.rest(arglist__15589);
+return G__15587__delegate(p__15581,children__$1);
 });
-G__11927.cljs$core$IFn$_invoke$arity$variadic = G__11927__delegate;
-return G__11927;
+G__15587.cljs$core$IFn$_invoke$arity$variadic = G__15587__delegate;
+return G__15587;
 })()
 ;
 ;})(hovered))
@@ -141,10 +141,8 @@ return G__11927;
 
 reepl.helpers.hoverable.cljs$lang$maxFixedArity = (1);
 
-reepl.helpers.hoverable.cljs$lang$applyTo = (function (seq11919){
-var G__11920 = cljs.core.first.call(null,seq11919);
-var seq11919__$1 = cljs.core.next.call(null,seq11919);
-return reepl.helpers.hoverable.cljs$core$IFn$_invoke$arity$variadic(G__11920,seq11919__$1);
+reepl.helpers.hoverable.cljs$lang$applyTo = (function (seq15579){
+var G__15580 = cljs.core.first.call(null,seq15579);
+var seq15579__$1 = cljs.core.next.call(null,seq15579);
+return reepl.helpers.hoverable.cljs$core$IFn$_invoke$arity$variadic(G__15580,seq15579__$1);
 });
-
-//# sourceMappingURL=helpers.js.map

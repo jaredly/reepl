@@ -17,5 +17,3 @@ return replumb.doc_maps.repl_special_doc_map.call(null,cljs.core.first.call(null
 return and__6441__auto__;
 }
 });
-
-//# sourceMappingURL=doc_maps.js.map

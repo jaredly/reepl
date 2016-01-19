@@ -20,5 +20,3 @@ return cljs.core.second.call(null,e);
 throw (new Error([cljs.core.str("Not a valid base 64 digit: "),cljs.core.str(c)].join('')));
 }
 });
-
-//# sourceMappingURL=base64.js.map

@@ -40,5 +40,3 @@ return null;
  *   before calling read-eval-call. See nodejs-opts.
  */
 replumb.nodejs.default_opts = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"target","target",253001721),new cljs.core.Keyword(null,"nodejs","nodejs",321212524),new cljs.core.Keyword(null,"init-fns","init-fns",1169633539),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [replumb.nodejs.init_fn_BANG_], null)], null);
-
-//# sourceMappingURL=nodejs.js.map

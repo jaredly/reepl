@@ -114,5 +114,3 @@ return quil.middlewares.navigation_3d.navigation_3d.call(null,options);
 quil.middleware.navigation_2d = (function quil$middleware$navigation_2d(options){
 return quil.middlewares.navigation_2d.navigation_2d.call(null,options);
 });
-
-//# sourceMappingURL=middleware.js.map

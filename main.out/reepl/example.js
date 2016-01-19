@@ -8,7 +8,6 @@ goog.require('parinfer_codemirror.editor');
 goog.require('reepl.core');
 goog.require('cljs.tools.reader');
 goog.require('quil.core');
-goog.require('parinfer.codemirror.mode.clojure.clojure_parinfer');
 goog.require('reagent.core');
 goog.require('cljs.js');
 goog.require('devtools.core');
@@ -24,20 +23,20 @@ reepl.example.maybe_fn_docs = (function reepl$example$maybe_fn_docs(fn){
 var doc = reepl.replumb.doc_from_sym.call(null,fn);
 if(cljs.core.truth_(new cljs.core.Keyword(null,"forms","forms",2045992350).cljs$core$IFn$_invoke$arity$1(doc))){
 var sb__7427__auto__ = (new goog.string.StringBuffer());
-var _STAR_print_newline_STAR_15946_15948 = cljs.core._STAR_print_newline_STAR_;
-var _STAR_print_fn_STAR_15947_15949 = cljs.core._STAR_print_fn_STAR_;
+var _STAR_print_newline_STAR_19678_19680 = cljs.core._STAR_print_newline_STAR_;
+var _STAR_print_fn_STAR_19679_19681 = cljs.core._STAR_print_fn_STAR_;
 cljs.core._STAR_print_newline_STAR_ = true;
 
-cljs.core._STAR_print_fn_STAR_ = ((function (_STAR_print_newline_STAR_15946_15948,_STAR_print_fn_STAR_15947_15949,sb__7427__auto__,doc){
+cljs.core._STAR_print_fn_STAR_ = ((function (_STAR_print_newline_STAR_19678_19680,_STAR_print_fn_STAR_19679_19681,sb__7427__auto__,doc){
 return (function (x__7428__auto__){
 return sb__7427__auto__.append(x__7428__auto__);
-});})(_STAR_print_newline_STAR_15946_15948,_STAR_print_fn_STAR_15947_15949,sb__7427__auto__,doc))
+});})(_STAR_print_newline_STAR_19678_19680,_STAR_print_fn_STAR_19679_19681,sb__7427__auto__,doc))
 ;
 
 try{reepl.replumb.print_doc.call(null,doc);
-}finally {cljs.core._STAR_print_fn_STAR_ = _STAR_print_fn_STAR_15947_15949;
+}finally {cljs.core._STAR_print_fn_STAR_ = _STAR_print_fn_STAR_19679_19681;
 
-cljs.core._STAR_print_newline_STAR_ = _STAR_print_newline_STAR_15946_15948;
+cljs.core._STAR_print_newline_STAR_ = _STAR_print_newline_STAR_19678_19680;
 }
 return [cljs.core.str(sb__7427__auto__)].join('');
 } else {
@@ -45,8 +44,8 @@ return null;
 }
 });
 reepl.example.main_view = (function reepl$example$main_view(){
-return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.example.view,new cljs.core.Keyword(null,"main","main",-2117802661),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.example.view,new cljs.core.Keyword(null,"box","box",1530920394),new cljs.core.PersistentVector(null, 15, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.core.repl,new cljs.core.Keyword(null,"execute","execute",-129499188),reepl.replumb.run_repl,new cljs.core.Keyword(null,"complete-word","complete-word",1063206084),reepl.replumb.process_apropos,new cljs.core.Keyword(null,"get-docs","get-docs",-698720007),reepl.replumb.process_doc,new cljs.core.Keyword(null,"state","state",-1988618099),reepl.example.repl_state,new cljs.core.Keyword(null,"show-value-opts","show-value-opts",-412296519),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"showers","showers",1548575441),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.show_devtools.show_devtools,cljs.core.partial.call(null,reepl.show_function.show_fn_with_docs,reepl.example.maybe_fn_docs)], null)], null),new cljs.core.Keyword(null,"js-cm-opts","js-cm-opts",1231776640),new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"mode","mode",654403691),"clojure-parinfer",new cljs.core.Keyword(null,"keyMap","keyMap",945500512),"vim",new cljs.core.Keyword(null,"showCursorWhenSelecting","showCursorWhenSelecting",169880137),true], null),new cljs.core.Keyword(null,"on-cm-init","on-cm-init",105207782),(function (p1__15950_SHARP_){
-return parinfer_codemirror.editor.parinferize_BANG_.call(null,p1__15950_SHARP_,new cljs.core.Keyword(null,"repl-infer","repl-infer",24180246),new cljs.core.Keyword(null,"indent-mode","indent-mode",1737814542));
+return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.example.view,new cljs.core.Keyword(null,"main","main",-2117802661),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.example.view,new cljs.core.Keyword(null,"box","box",1530920394),new cljs.core.PersistentVector(null, 15, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.core.repl,new cljs.core.Keyword(null,"execute","execute",-129499188),reepl.replumb.run_repl,new cljs.core.Keyword(null,"complete-word","complete-word",1063206084),reepl.replumb.process_apropos,new cljs.core.Keyword(null,"get-docs","get-docs",-698720007),reepl.replumb.process_doc,new cljs.core.Keyword(null,"state","state",-1988618099),reepl.example.repl_state,new cljs.core.Keyword(null,"show-value-opts","show-value-opts",-412296519),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"showers","showers",1548575441),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.show_devtools.show_devtools,cljs.core.partial.call(null,reepl.show_function.show_fn_with_docs,reepl.example.maybe_fn_docs)], null)], null),new cljs.core.Keyword(null,"js-cm-opts","js-cm-opts",1231776640),new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"mode","mode",654403691),"clojure-parinfer",new cljs.core.Keyword(null,"keyMap","keyMap",945500512),"vim",new cljs.core.Keyword(null,"showCursorWhenSelecting","showCursorWhenSelecting",169880137),true], null),new cljs.core.Keyword(null,"on-cm-init","on-cm-init",105207782),(function (p1__19682_SHARP_){
+return parinfer_codemirror.editor.parinferize_BANG_.call(null,p1__19682_SHARP_,new cljs.core.Keyword(null,"repl-infer","repl-infer",24180246),new cljs.core.Keyword(null,"indent-mode","indent-mode",1737814542));
 })], null)], null)], null);
 });
 reepl.example.main = (function reepl$example$main(){
@@ -67,5 +66,3 @@ if(typeof reepl.example._initing !== 'undefined'){
 } else {
 reepl.example._initing = parinfer_codemirror.editor.start_editor_sync_BANG_.call(null);
 }
-
-//# sourceMappingURL=example.js.map

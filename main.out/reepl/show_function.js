@@ -15,10 +15,10 @@ reepl.show_function.recover_cljs_name = (function reepl$show_function$recover_cl
 return cljs.core.demunge.call(null,[cljs.core.str(clojure.string.join.call(null,".",cljs.core.butlast.call(null,parts))),cljs.core.str("/"),cljs.core.str(cljs.core.last.call(null,parts))].join(''));
 });
 reepl.show_function.get_cljs_arities = (function reepl$show_function$get_cljs_arities(fn){
-return cljs.core.map.call(null,(function (p1__15933_SHARP_){
-return (fn[p1__15933_SHARP_]);
-}),cljs.core.filter.call(null,(function (p1__15934_SHARP_){
-return p1__15934_SHARP_.startsWith(reepl.show_function.cljs_fn_prefix);
+return cljs.core.map.call(null,(function (p1__19665_SHARP_){
+return (fn[p1__19665_SHARP_]);
+}),cljs.core.filter.call(null,(function (p1__19666_SHARP_){
+return p1__19666_SHARP_.startsWith(reepl.show_function.cljs_fn_prefix);
 }),cljs.core.js__GT_clj.call(null,Object.keys(fn))));
 });
 reepl.show_function.get_fn_summary = (function reepl$show_function$get_fn_summary(fn){
@@ -65,5 +65,3 @@ return reepl.show_function.show_fn_with_docs.call(null,(function (_){
 return null;
 }),f,config,show_value);
 });
-
-//# sourceMappingURL=show_function.js.map

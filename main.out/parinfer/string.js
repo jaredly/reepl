@@ -15,5 +15,3 @@ return [cljs.core.str(cljs.core.subs.call(null,orig,(0),start)),cljs.core.str(cl
 parinfer.string.get_lines = (function parinfer$string$get_lines(text){
 return clojure.string.split.call(null,text,/\n/,(-1));
 });
-
-//# sourceMappingURL=string.js.map

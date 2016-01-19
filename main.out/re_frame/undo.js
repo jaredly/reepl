@@ -129,8 +129,8 @@ re_frame.undo.undo.call(null,re_frame.undo.undo_list,re_frame.db.app_db,re_frame
 
 re_frame.undo.undo.call(null,re_frame.undo.undo_explain_list,re_frame.undo.app_explain,re_frame.undo.redo_explain_list);
 
-var G__13277 = (n - (1));
-n = G__13277;
+var G__16937 = (n - (1));
+n = G__16937;
 continue;
 } else {
 return null;
@@ -138,10 +138,10 @@ return null;
 break;
 }
 });
-re_frame.handlers.register_base.call(null,new cljs.core.Keyword(null,"undo","undo",-1818036302),(function re_frame$undo$handler(_,p__13278){
-var vec__13280 = p__13278;
-var ___$1 = cljs.core.nth.call(null,vec__13280,(0),null);
-var n = cljs.core.nth.call(null,vec__13280,(1),null);
+re_frame.handlers.register_base.call(null,new cljs.core.Keyword(null,"undo","undo",-1818036302),(function re_frame$undo$handler(_,p__16938){
+var vec__16940 = p__16938;
+var ___$1 = cljs.core.nth.call(null,vec__16940,(0),null);
+var n = cljs.core.nth.call(null,vec__16940,(1),null);
 if(cljs.core.not.call(null,re_frame.undo.undos_QMARK_.call(null))){
 return re_frame.utils.warn.call(null,"re-frame: you did a (dispatch [:undo]), but there is nothing to undo.");
 } else {
@@ -179,8 +179,8 @@ re_frame.undo.redo.call(null,re_frame.undo.undo_list,re_frame.db.app_db,re_frame
 
 re_frame.undo.redo.call(null,re_frame.undo.undo_explain_list,re_frame.undo.app_explain,re_frame.undo.redo_explain_list);
 
-var G__13281 = (n - (1));
-n = G__13281;
+var G__16941 = (n - (1));
+n = G__16941;
 continue;
 } else {
 return null;
@@ -188,10 +188,10 @@ return null;
 break;
 }
 });
-re_frame.handlers.register_base.call(null,new cljs.core.Keyword(null,"redo","redo",501190664),(function re_frame$undo$handler(_,p__13282){
-var vec__13284 = p__13282;
-var ___$1 = cljs.core.nth.call(null,vec__13284,(0),null);
-var n = cljs.core.nth.call(null,vec__13284,(1),null);
+re_frame.handlers.register_base.call(null,new cljs.core.Keyword(null,"redo","redo",501190664),(function re_frame$undo$handler(_,p__16942){
+var vec__16944 = p__16942;
+var ___$1 = cljs.core.nth.call(null,vec__16944,(0),null);
+var n = cljs.core.nth.call(null,vec__16944,(1),null);
 if(cljs.core.not.call(null,re_frame.undo.redos_QMARK_.call(null))){
 return re_frame.utils.warn.call(null,"re-frame: you did a (dispatch [:redo]), but there is nothing to redo.");
 } else {
@@ -211,5 +211,3 @@ return re_frame.utils.warn.call(null,"re-frame: you did a (dispatch [:purge-redo
 return re_frame.undo.clear_redos_BANG_.call(null);
 }
 }));
-
-//# sourceMappingURL=undo.js.map

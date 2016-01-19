@@ -42,5 +42,3 @@ var pos = new cljs.core.Keyword(null,"hist-pos","hist-pos",64251178).cljs$core$I
 var new_pos = (((pos <= (0)))?(0):(pos - (1)));
 return cljs.core.assoc.call(null,db,new cljs.core.Keyword(null,"hist-pos","hist-pos",64251178),new_pos);
 });
-
-//# sourceMappingURL=handlers.js.map

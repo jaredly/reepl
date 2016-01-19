@@ -24,5 +24,3 @@ return new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"po
 });})(idx,history))
 );
 });
-
-//# sourceMappingURL=subs.js.map

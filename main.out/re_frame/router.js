@@ -229,8 +229,8 @@ return re_frame.router._fsm_trigger.call(null,this$__$1,new cljs.core.Keyword(nu
 } else {
 re_frame.router._process_1st_event.call(null,this$__$1);
 
-var G__13248 = (n - (1));
-n = G__13248;
+var G__16908 = (n - (1));
+n = G__16908;
 continue;
 }
 }
@@ -267,56 +267,56 @@ var self__ = this;
 var this$__$1 = this;
 var event_v = cljs.core.peek.call(null,self__.queue);
 try{re_frame.handlers.handle.call(null,event_v);
-}catch (e13241){var ex_13249 = e13241;
-re_frame.router._fsm_trigger.call(null,this$__$1,new cljs.core.Keyword(null,"exception","exception",-335277064),ex_13249);
+}catch (e16901){var ex_16909 = e16901;
+re_frame.router._fsm_trigger.call(null,this$__$1,new cljs.core.Keyword(null,"exception","exception",-335277064),ex_16909);
 }
 self__.queue = cljs.core.pop.call(null,self__.queue);
 
-var seq__13242 = cljs.core.seq.call(null,self__.post_event_callback_fns);
-var chunk__13243 = null;
-var count__13244 = (0);
-var i__13245 = (0);
+var seq__16902 = cljs.core.seq.call(null,self__.post_event_callback_fns);
+var chunk__16903 = null;
+var count__16904 = (0);
+var i__16905 = (0);
 while(true){
-if((i__13245 < count__13244)){
-var f = cljs.core._nth.call(null,chunk__13243,i__13245);
+if((i__16905 < count__16904)){
+var f = cljs.core._nth.call(null,chunk__16903,i__16905);
 f.call(null,event_v,self__.queue);
 
-var G__13250 = seq__13242;
-var G__13251 = chunk__13243;
-var G__13252 = count__13244;
-var G__13253 = (i__13245 + (1));
-seq__13242 = G__13250;
-chunk__13243 = G__13251;
-count__13244 = G__13252;
-i__13245 = G__13253;
+var G__16910 = seq__16902;
+var G__16911 = chunk__16903;
+var G__16912 = count__16904;
+var G__16913 = (i__16905 + (1));
+seq__16902 = G__16910;
+chunk__16903 = G__16911;
+count__16904 = G__16912;
+i__16905 = G__16913;
 continue;
 } else {
-var temp__4425__auto__ = cljs.core.seq.call(null,seq__13242);
+var temp__4425__auto__ = cljs.core.seq.call(null,seq__16902);
 if(temp__4425__auto__){
-var seq__13242__$1 = temp__4425__auto__;
-if(cljs.core.chunked_seq_QMARK_.call(null,seq__13242__$1)){
-var c__7256__auto__ = cljs.core.chunk_first.call(null,seq__13242__$1);
-var G__13254 = cljs.core.chunk_rest.call(null,seq__13242__$1);
-var G__13255 = c__7256__auto__;
-var G__13256 = cljs.core.count.call(null,c__7256__auto__);
-var G__13257 = (0);
-seq__13242 = G__13254;
-chunk__13243 = G__13255;
-count__13244 = G__13256;
-i__13245 = G__13257;
+var seq__16902__$1 = temp__4425__auto__;
+if(cljs.core.chunked_seq_QMARK_.call(null,seq__16902__$1)){
+var c__7256__auto__ = cljs.core.chunk_first.call(null,seq__16902__$1);
+var G__16914 = cljs.core.chunk_rest.call(null,seq__16902__$1);
+var G__16915 = c__7256__auto__;
+var G__16916 = cljs.core.count.call(null,c__7256__auto__);
+var G__16917 = (0);
+seq__16902 = G__16914;
+chunk__16903 = G__16915;
+count__16904 = G__16916;
+i__16905 = G__16917;
 continue;
 } else {
-var f = cljs.core.first.call(null,seq__13242__$1);
+var f = cljs.core.first.call(null,seq__16902__$1);
 f.call(null,event_v,self__.queue);
 
-var G__13258 = cljs.core.next.call(null,seq__13242__$1);
-var G__13259 = null;
-var G__13260 = (0);
-var G__13261 = (0);
-seq__13242 = G__13258;
-chunk__13243 = G__13259;
-count__13244 = G__13260;
-i__13245 = G__13261;
+var G__16918 = cljs.core.next.call(null,seq__16902__$1);
+var G__16919 = null;
+var G__16920 = (0);
+var G__16921 = (0);
+seq__16902 = G__16918;
+chunk__16903 = G__16919;
+count__16904 = G__16920;
+i__16905 = G__16921;
 continue;
 }
 } else {
@@ -336,74 +336,74 @@ return re_frame.router._fsm_trigger.call(null,this$__$1,new cljs.core.Keyword(nu
 re_frame.router.EventQueue.prototype.re_frame$router$IEventQueue$_fsm_trigger$arity$3 = (function (this$,trigger,arg){
 var self__ = this;
 var this$__$1 = this;
-var vec__13246 = (function (){var G__13247 = new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [self__.fsm_state,trigger], null);
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"idle","idle",-2007156861),new cljs.core.Keyword(null,"add-event","add-event",938429088)], null),G__13247)){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),((function (G__13247,this$__$1){
+var vec__16906 = (function (){var G__16907 = new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [self__.fsm_state,trigger], null);
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"idle","idle",-2007156861),new cljs.core.Keyword(null,"add-event","add-event",938429088)], null),G__16907)){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),((function (G__16907,this$__$1){
 return (function (){
 re_frame.router._add_event.call(null,this$__$1,arg);
 
 return re_frame.router._run_next_tick.call(null,this$__$1);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 } else {
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),new cljs.core.Keyword(null,"add-event","add-event",938429088)], null),G__13247)){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),((function (G__13247,this$__$1){
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),new cljs.core.Keyword(null,"add-event","add-event",938429088)], null),G__16907)){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),((function (G__16907,this$__$1){
 return (function (){
 return re_frame.router._add_event.call(null,this$__$1,arg);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 } else {
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),new cljs.core.Keyword(null,"run-queue","run-queue",-1701798027)], null),G__13247)){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),((function (G__13247,this$__$1){
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),new cljs.core.Keyword(null,"run-queue","run-queue",-1701798027)], null),G__16907)){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),((function (G__16907,this$__$1){
 return (function (){
 return re_frame.router._run_queue.call(null,this$__$1);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 } else {
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),new cljs.core.Keyword(null,"add-event","add-event",938429088)], null),G__13247)){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),((function (G__13247,this$__$1){
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),new cljs.core.Keyword(null,"add-event","add-event",938429088)], null),G__16907)){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),((function (G__16907,this$__$1){
 return (function (){
 return re_frame.router._add_event.call(null,this$__$1,arg);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 } else {
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),new cljs.core.Keyword(null,"pause","pause",-2095325672)], null),G__13247)){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"paused","paused",-1710376127),((function (G__13247,this$__$1){
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),new cljs.core.Keyword(null,"pause","pause",-2095325672)], null),G__16907)){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"paused","paused",-1710376127),((function (G__16907,this$__$1){
 return (function (){
 return re_frame.router._pause.call(null,this$__$1,arg);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 } else {
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),new cljs.core.Keyword(null,"exception","exception",-335277064)], null),G__13247)){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"idle","idle",-2007156861),((function (G__13247,this$__$1){
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),new cljs.core.Keyword(null,"exception","exception",-335277064)], null),G__16907)){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"idle","idle",-2007156861),((function (G__16907,this$__$1){
 return (function (){
 return re_frame.router._exception.call(null,this$__$1,arg);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 } else {
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),new cljs.core.Keyword(null,"finish-run","finish-run",753148477)], null),G__13247)){
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),new cljs.core.Keyword(null,"finish-run","finish-run",753148477)], null),G__16907)){
 if(cljs.core.empty_QMARK_.call(null,self__.queue)){
 return new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"idle","idle",-2007156861)], null);
 } else {
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),((function (G__13247,this$__$1){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"scheduled","scheduled",553898551),((function (G__16907,this$__$1){
 return (function (){
 return re_frame.router._run_next_tick.call(null,this$__$1);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 }
 } else {
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"paused","paused",-1710376127),new cljs.core.Keyword(null,"add-event","add-event",938429088)], null),G__13247)){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"paused","paused",-1710376127),((function (G__13247,this$__$1){
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"paused","paused",-1710376127),new cljs.core.Keyword(null,"add-event","add-event",938429088)], null),G__16907)){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"paused","paused",-1710376127),((function (G__16907,this$__$1){
 return (function (){
 return re_frame.router._add_event.call(null,this$__$1,arg);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 } else {
-if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"paused","paused",-1710376127),new cljs.core.Keyword(null,"resume","resume",-118572261)], null),G__13247)){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),((function (G__13247,this$__$1){
+if(cljs.core._EQ_.call(null,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"paused","paused",-1710376127),new cljs.core.Keyword(null,"resume","resume",-118572261)], null),G__16907)){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"running","running",1554969103),((function (G__16907,this$__$1){
 return (function (){
 return re_frame.router._resume.call(null,this$__$1);
-});})(G__13247,this$__$1))
+});})(G__16907,this$__$1))
 ], null);
 } else {
 throw [cljs.core.str("re-frame: state transition not found. "),cljs.core.str(self__.fsm_state),cljs.core.str(" "),cljs.core.str(trigger)].join('');
@@ -418,8 +418,8 @@ throw [cljs.core.str("re-frame: state transition not found. "),cljs.core.str(sel
 }
 }
 })();
-var new_state = cljs.core.nth.call(null,vec__13246,(0),null);
-var action_fn = cljs.core.nth.call(null,vec__13246,(1),null);
+var new_state = cljs.core.nth.call(null,vec__16906,(0),null);
+var action_fn = cljs.core.nth.call(null,vec__16906,(1),null);
 self__.fsm_state = new_state;
 
 if(cljs.core.truth_(action_fn)){
@@ -498,5 +498,3 @@ re_frame.handlers.handle.call(null,event_v);
 
 return null;
 });
-
-//# sourceMappingURL=router.js.map
