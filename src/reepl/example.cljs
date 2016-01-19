@@ -54,7 +54,7 @@
      :show-value-opts
      {:showers [show-devtools/show-devtools
                 (partial show-function/show-fn-with-docs maybe-fn-docs)]}
-     :js-cm-opts {:mode "clojure"
+     :js-cm-opts {:mode "clojure-parinfer"
                   :keyMap "vim"
                   :showCursorWhenSelecting true}
      :on-cm-init #(parinfer/parinferize! % :repl-infer :indent-mode)]]])
@@ -83,5 +83,6 @@
 
 (main)
 
+;; :((( why doesn't parinfer support reloading??
 (defonce -initing
   (parinfer/start-editor-sync!))

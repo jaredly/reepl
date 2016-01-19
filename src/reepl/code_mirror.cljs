@@ -13,26 +13,46 @@
             [cljs.pprint :as pprint]))
 
 ;; TODO can we avoid the global state modification here?
-(js/CodeMirror.registerHelper
+#_(js/CodeMirror.registerHelper
  "wordChars"
  "clojure"
  #"[^\s\(\)\[\]\{\},`']")
+
+(def wordChars
+  "[^\\s\\(\\)\\[\\]\\{\\},`']*")
+
+(defn word-in-line
+  [line lno cno]
+  (let [
+        back (get (.match (.slice line 0 cno) (js/RegExp. (str wordChars "$"))) 0)
+        forward (get (.match (.slice line cno) (js/RegExp. (str "^" wordChars))) 0)
+        ]
+    {:start #js {:line lno
+                 :ch (- cno (count back))}
+     :end #js {:line lno
+               :ch (+ cno (count forward))}
+     }))
 
 (defn cm-current-word
   "Find the current 'word' according to CodeMirror's `wordChars' list"
   [cm]
   (let [pos (.getCursor cm)
-        back #js {:line (.-line pos)
-                  :ch (dec (.-ch pos))}]
-    (.findWordAt cm back)))
+        lno (.-line pos)
+        cno (.-ch pos)
+        line (.getLine cm lno)
+        ]
+    ;; findWordAt doesn't work w/ clojure-parinfer mode
+    ;; (.findWordAt cm back)
+    (word-in-line line lno cno)
+    ))
 
 (defn repl-hint
   "Get a new completion state."
   [complete-word cm options]
   (let [range (cm-current-word cm)
         text (.getRange cm
-                        (.-anchor range)
-                        (.-head range))
+                        (:start range)
+                        (:end range))
         words (when (not (empty? text))
                 (vec (complete-word text)))]
     (when-not (empty? words)
@@ -42,8 +62,8 @@
        :show-all false
        :initial-text text
        :pos 0
-       :from (.-anchor range)
-       :to (.-head range)})))
+       :from (:start range)
+       :to (:end range)})))
 
 (defn cycle-pos
   "Cycle through positions. Returns [active? new-pos].
