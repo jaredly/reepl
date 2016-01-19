@@ -1,6 +1,7 @@
 (set-env!
   :source-paths   #{"src"}
   :resource-paths #{"html"}
+  :target-path "target"
   :dependencies
   '[
     [adzerk/boot-cljs            "1.7.228-1"       :scope "test"]
@@ -67,8 +68,10 @@
 
 (deftask dev []
   (set-env! :source-paths #{"src"})
+  (set-env! :asset-paths #{"static"})
   (comp
-        (serve :dir ".")
+   (target :dir #{"target"})
+        (serve :dir "target")
         (watch)
         ;(speak)
         (reload :on-jsload 'reepl.example/main)
