@@ -1,7 +1,6 @@
 (set-env!
   :source-paths   #{"src"}
   :resource-paths #{"html"}
-  :target-path "target"
   :dependencies
   '[
     [adzerk/boot-cljs            "1.7.228-1"       :scope "test"]
@@ -73,20 +72,20 @@
    (target :dir #{"target"})
    (serve :dir "target")
    (watch)
-                                        ;(speak)
+   ;;(speak)
    (reload :on-jsload 'reepl.example/main)
    (cljs-repl)
    (cljs :source-map true
          :compiler-options {:foreign-libs foreign-libs}
          :optimizations :none)
-   (sift
-    :add-jar
-    {'cljsjs/codemirror
-     #"cljsjs/codemirror/development/codemirror.css"})
-   (sift
-    :move
-    {#"cljsjs/codemirror/development/codemirror.css"
-     "vendor/codemirror/codemirror.css"})))
+   (sift :add-jar
+         {'cljsjs/codemirror
+          #"cljsjs/codemirror/development/codemirror.css"})
+   (sift :move
+         {#"cljsjs/codemirror/development/codemirror.css"
+          "vendor/codemirror/codemirror.css"})
+   (target :dir #{"target"})
+   ))
 
 (deftask devfw []
   (set-env! :source-paths #(into % ["src"]))
@@ -98,11 +97,12 @@
   (comp
    (target :dir #{"build"})
    (cljs :source-map true
-         :compiler-options {:asset-path "target/out"
+         :compiler-options {;;:asset-path "target/out"
                             :foreign-libs foreign-libs}
          :optimizations :simple)
    (sift :add-jar {'cljsjs/codemirror #"cljsjs/codemirror/development/codemirror.css"})
    (sift :move {#"cljsjs/codemirror/development/codemirror.css"
                 "vendor/codemirror/codemirror.css"})
+   (target :dir #{"build"})
    ))
 
