@@ -71,22 +71,22 @@
   (set-env! :asset-paths #{"static"})
   (comp
    (target :dir #{"target"})
-        (serve :dir "target")
-        (watch)
-        ;(speak)
-        (reload :on-jsload 'reepl.example/main)
-        (cljs-repl)
-        (cljs :source-map true
-              :compiler-options {:foreign-libs foreign-libs}
-              :optimizations :none)
-        (sift
-         :add-jar
-         {'cljsjs/codemirror
-          #"cljsjs/codemirror/development/codemirror.css"})
-        (sift
-         :move
-         {#"cljsjs/codemirror/development/codemirror.css"
-          "vendor/codemirror/codemirror.css"})))
+   (serve :dir "target")
+   (watch)
+                                        ;(speak)
+   (reload :on-jsload 'reepl.example/main)
+   (cljs-repl)
+   (cljs :source-map true
+         :compiler-options {:foreign-libs foreign-libs}
+         :optimizations :none)
+   (sift
+    :add-jar
+    {'cljsjs/codemirror
+     #"cljsjs/codemirror/development/codemirror.css"})
+   (sift
+    :move
+    {#"cljsjs/codemirror/development/codemirror.css"
+     "vendor/codemirror/codemirror.css"})))
 
 (deftask devfw []
   (set-env! :source-paths #(into % ["src"]))
@@ -94,12 +94,15 @@
 
 (deftask build []
   (set-env! :source-paths #{"src"})
-  (comp (cljs :source-map true
-              :compiler-options {:asset-path "target/out"
-                                 :foreign-libs foreign-libs}
-              :optimizations :advanced)
-        (sift :add-jar {'cljsjs/codemirror #"cljsjs/codemirror/development/codemirror.css"})
-        (sift :move {#"cljsjs/codemirror/development/codemirror.css"
-                     "vendor/codemirror/codemirror.css"})
-        ))
+  (set-env! :asset-paths #{"static"})
+  (comp
+   (target :dir #{"target"})
+   (cljs :source-map true
+         :compiler-options {:asset-path "target/out"
+                            :foreign-libs foreign-libs}
+         :optimizations :simple)
+   (sift :add-jar {'cljsjs/codemirror #"cljsjs/codemirror/development/codemirror.css"})
+   (sift :move {#"cljsjs/codemirror/development/codemirror.css"
+                "vendor/codemirror/codemirror.css"})
+   ))
 
