@@ -1,0 +1,2 @@
+;; Analyzed by ClojureScript 1.7.228
+{:name adzerk.boot-reload, :doc nil, :excludes #{}, :use-macros nil, :require-macros nil, :uses nil, :requires {client adzerk.boot-reload.client, adzerk.boot-reload.client adzerk.boot-reload.client, reepl.example reepl.example}, :imports nil, :cljs.analyzer/constants {:seen #{:asset-host :on-jsload}, :order [:asset-host :on-jsload]}}
