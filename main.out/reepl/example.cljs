@@ -26,13 +26,28 @@
   {:main {:justify-content :center
           :align-items :center
           :align-self :stretch
+          :margin-top 100
+          :margin-bottom 100
           :flex 1}
    :box {:width 700
-         :margin-top 100
-         :margin-bottom 100
          :border-radius 5
          :background-color "white"
-         :flex 1}})
+         :flex 1}
+   :bottom {:flex-direction :row
+            :align-items :center
+            :color "#ddd"}
+   :label {:margin "10px 5px"
+           :display :flex
+           :flex-direction :row
+           :align-items :center
+           :font-size ".8em"
+           :cursor :pointer
+           }
+   :checkbox {:margin-right 5}
+   :link {:color "#aaa"
+          :text-decoration :none
+          :margin "0 20px"}
+   })
 
 (def view (partial helpers/view styles))
 
@@ -41,6 +56,30 @@
     (when (:forms doc)
       (with-out-str
         (replumb/print-doc doc)))))
+
+(def default-settings
+  {:vim false
+   :parinfer true})
+
+(defn get-settings []
+  (let [val js/localStorage.reeplSettings]
+    (if-not val
+      default-settings
+      (try
+        (js->clj (js/JSON.parse val) :keywordize-keys true)
+        (catch js/Error _
+          default-settings)))))
+
+(defn save-settings [settings]
+  (let [str (js/JSON.stringify (clj->js settings))]
+    (aset js/localStorage "reeplSettings" str)))
+
+(defonce
+  settings (r/atom (get-settings)))
+
+(add-watch settings :settings #(save-settings %4))
+
+(def pi-count (atom 0))
 
 (defn main-view []
   [view :main
@@ -54,10 +93,39 @@
      :show-value-opts
      {:showers [show-devtools/show-devtools
                 (partial show-function/show-fn-with-docs maybe-fn-docs)]}
-     :js-cm-opts {:mode "clojure-parinfer"
-                  :keyMap "vim"
+     :js-cm-opts {:mode (if (:parinfer @settings)
+                          "clojure-parinfer"
+                          "clojure")
+                  :keyMap (if (:vim @settings) "vim" "default")
                   :showCursorWhenSelecting true}
-     :on-cm-init #(parinfer/parinferize! % :repl-infer :indent-mode)]]])
+     :on-cm-init #(when (:parinfer @settings)
+                    (parinfer/parinferize! % (swap! pi-count inc)
+                                           :indent-mode (.getValue %)))]
+    ]
+   [view :bottom
+    [:label
+     {:style (:label styles)}
+     [:input {
+              :type "checkbox"
+              :checked (:vim @settings)
+              :style (:checkbox styles)
+              :on-change #(swap! settings update :vim not)
+              }]
+     "Vim"]
+    [:label
+     {:style (:label styles)}
+     [:input {:checked (:parinfer @settings)
+              :type "checkbox"
+              :style (:checkbox styles)
+              :on-change #(swap! settings update :parinfer not)
+              }]
+     "Parinfer"]
+    [:a
+     {:href "https://github.com/jaredly/reepl"
+      :target :_blank
+      :style (:link styles)}
+     "Github"]
+    ]])
 
 (defn main []
   (js/console.log "reload!")

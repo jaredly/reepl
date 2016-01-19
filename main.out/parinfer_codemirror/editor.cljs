@@ -55,10 +55,11 @@
 
 (defn parinferize!
   "Add parinfer goodness to a codemirror editor"
-  ([cm key- parinfer-mode]
+  ([cm key- parinfer-mode initial-value]
    (when-not (get @state key-)
      (let [initial-state (assoc empty-editor-state
-                                :mode parinfer-mode)
+                                :mode parinfer-mode
+                                :text initial-value)
            prev-editor-state (atom nil)]
 
        (when-not (get @state key-)

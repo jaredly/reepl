@@ -23,23 +23,23 @@ parinfer_codemirror.example.editor_opts = new cljs.core.PersistentArrayMap(null,
  * Create a non-parinfer editor.
  */
 parinfer_codemirror.example.create_regular_editor_BANG_ = (function parinfer_codemirror$example$create_regular_editor_BANG_(var_args){
-var args19685 = [];
-var len__7511__auto___19688 = arguments.length;
-var i__7512__auto___19689 = (0);
+var args19697 = [];
+var len__7511__auto___19700 = arguments.length;
+var i__7512__auto___19701 = (0);
 while(true){
-if((i__7512__auto___19689 < len__7511__auto___19688)){
-args19685.push((arguments[i__7512__auto___19689]));
+if((i__7512__auto___19701 < len__7511__auto___19700)){
+args19697.push((arguments[i__7512__auto___19701]));
 
-var G__19690 = (i__7512__auto___19689 + (1));
-i__7512__auto___19689 = G__19690;
+var G__19702 = (i__7512__auto___19701 + (1));
+i__7512__auto___19701 = G__19702;
 continue;
 } else {
 }
 break;
 }
 
-var G__19687 = args19685.length;
-switch (G__19687) {
+var G__19699 = args19697.length;
+switch (G__19699) {
 case 1:
 return parinfer_codemirror.example.create_regular_editor_BANG_.cljs$core$IFn$_invoke$arity$1((arguments[(0)]));
 
@@ -49,7 +49,7 @@ return parinfer_codemirror.example.create_regular_editor_BANG_.cljs$core$IFn$_in
 
 break;
 default:
-throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args19685.length)].join('')));
+throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args19697.length)].join('')));
 
 }
 });
@@ -76,23 +76,23 @@ parinfer_codemirror.example.create_regular_editor_BANG_.cljs$lang$maxFixedArity 
  * Create a parinfer editor.
  */
 parinfer_codemirror.example.create_editor_BANG_ = (function parinfer_codemirror$example$create_editor_BANG_(var_args){
-var args19692 = [];
-var len__7511__auto___19695 = arguments.length;
-var i__7512__auto___19696 = (0);
+var args19704 = [];
+var len__7511__auto___19707 = arguments.length;
+var i__7512__auto___19708 = (0);
 while(true){
-if((i__7512__auto___19696 < len__7511__auto___19695)){
-args19692.push((arguments[i__7512__auto___19696]));
+if((i__7512__auto___19708 < len__7511__auto___19707)){
+args19704.push((arguments[i__7512__auto___19708]));
 
-var G__19697 = (i__7512__auto___19696 + (1));
-i__7512__auto___19696 = G__19697;
+var G__19709 = (i__7512__auto___19708 + (1));
+i__7512__auto___19708 = G__19709;
 continue;
 } else {
 }
 break;
 }
 
-var G__19694 = args19692.length;
-switch (G__19694) {
+var G__19706 = args19704.length;
+switch (G__19706) {
 case 2:
 return parinfer_codemirror.example.create_editor_BANG_.cljs$core$IFn$_invoke$arity$2((arguments[(0)]),(arguments[(1)]));
 
@@ -102,7 +102,7 @@ return parinfer_codemirror.example.create_editor_BANG_.cljs$core$IFn$_invoke$ari
 
 break;
 default:
-throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args19692.length)].join('')));
+throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args19704.length)].join('')));
 
 }
 });
@@ -120,7 +120,7 @@ var cm = CodeMirror.fromTextArea(element,cljs.core.clj__GT_js.call(null,cljs.cor
 var wrapper = cm.getWrapperElement();
 wrapper.id = [cljs.core.str("cm-"),cljs.core.str(element_id)].join('');
 
-parinfer_codemirror.editor.parinferize_BANG_.call(null,cm,key_,new cljs.core.Keyword(null,"parinfer-mode","parinfer-mode",-851652980).cljs$core$IFn$_invoke$arity$1(opts));
+parinfer_codemirror.editor.parinferize_BANG_.call(null,cm,key_,new cljs.core.Keyword(null,"parinfer-mode","parinfer-mode",-851652980).cljs$core$IFn$_invoke$arity$1(opts),"");
 
 return cm;
 }

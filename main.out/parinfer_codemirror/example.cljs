@@ -51,6 +51,6 @@
 
        (set! (.-id wrapper) (str "cm-" element-id))
 
-       (parinferize! cm key- (:parinfer-mode opts))
+       (parinferize! cm key- (:parinfer-mode opts) "")
 
        cm))))
