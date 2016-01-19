@@ -1,6 +1,8 @@
 # Reepl
 The cljs Read-eval-print-loop that really understands you
 
+![screenshot](./screenshot.png)
+
 ## [Try it](https://jaredforsyth.com/reepl)
 
 ### Features
