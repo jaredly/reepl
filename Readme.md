@@ -28,3 +28,11 @@ Grab the latest `boot` (version 2.5.5 at the time of writing), run `boot dev`, a
 - codemirror: you can see in `build.boot` how to get the css imported correctly
 - parinfer-codemirror: check out the `build.boot` for this too, and I'm currently using a [custom fork](https://github.com/jaredly/codemirror-parinfer)
 
+## Powered By
+
+- [Clojurescript](https://github.com/clojure/clojurescript)
+- [Boot](http://boot-clj.com/)
+- [Reagent](http://reagent-project.github.io/) (which uses [React](https://facebook.github.io/react/))
+- [Cljs-Devtools](https://github.com/binaryage/cljs-devtools/)
+- [Parinfer](https://shaunlebron.github.io/parinfer/)
+- [Replumb](https://github.com/ScalaConsultants/replumb/) (optional)
