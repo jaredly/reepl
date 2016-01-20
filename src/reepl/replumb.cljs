@@ -91,6 +91,36 @@
                     (cb false (:error result))
                     (cb true (aget js/window "last_repl_value"))))))
 
+(defn get-first-form [text]
+  ;; parse #js {} correctly
+  (binding [cljs.tools.reader/*data-readers* tags/*cljs-data-readers*]
+    (let [rr (string-push-back-reader text)
+          form (cljs.tools.reader/read rr)
+          ;; TODO this is a bit dependent on tools.reader internals...
+          s-pos (.-s-pos (.-rdr rr))]
+      [form s-pos])))
+
+(defn run-repl-multi [text opts cb]
+  (let [text (.trim text)
+        [form pos] (get-first-form text)
+        source (.slice text 0 pos)
+        remainder (.trim (.slice text pos))
+        has-more? (not (empty? remainder))]
+    (js/console.log [text form pos source remainder has-more?])
+    (replumb/read-eval-call
+     opts
+     #(let [success? (replumb/success? %)
+            result (replumb/unwrap-result %)]
+        (js/console.log "evaled" [success? result has-more?])
+        (if-not success?
+          (cb success? result)
+          ;; TODO should I log the result if it's not the end?
+          (if has-more?
+            (run-repl-multi remainder opts cb)
+            (cb success? result))
+          ))
+     source)))
+
 ;; Trying to get expressions + statements to play well together
 ;; TODO is this a better way? The `do' stuff seems to work alright ... although
 ;; it won't work if there are other `ns' statements inside there...
@@ -129,8 +159,8 @@
    (fix-ns-do text)))
 
 (defn run-repl
-  ([text cb] (run-repl-experimental* text replumb-opts cb))
-  ([text opts cb] (run-repl-experimental* text (merge replumb-opts opts) cb)))
+  ([text cb] (run-repl-multi text replumb-opts cb))
+  ([text opts cb] (run-repl-multi text (merge replumb-opts opts) cb)))
 
 (defn compare-completion
   "The comparison algo for completions
@@ -176,8 +206,11 @@
   namespace."
   [ns]
 
-  (let [parts (map munge (.split (str ns) "."))]
-    (map demunge (js/Object.keys (reduce aget js/window parts)))))
+  (let [parts (map munge (.split (str ns) "."))
+        ns (reduce aget js/window parts)]
+    (if-not ns
+      []
+      (map demunge (js/Object.keys ns)))))
 
 (defn dedup-requires
   "Takes a map of {require-name ns-name} and dedups multiple keys that have the

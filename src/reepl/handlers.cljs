@@ -39,7 +39,9 @@
         (assoc :history
                (if (= pos 0)
                  (assoc history idx text)
-                 (conj history text))))))
+                 (if (= "" (last history))
+                   (assoc history (dec (count history)) text)
+                   (conj history text)))))))
 
 (defn go-up [db]
   (let [pos (:hist-pos db)
