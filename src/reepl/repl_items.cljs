@@ -45,6 +45,7 @@
    :input-caret {:color "#55f"
                  :margin-right 10}
    :input-text {:flex 1
+                :cursor :pointer
                 :word-wrap :break-word}
    :output-caret {}
    :output-value {:flex 1
@@ -58,10 +59,11 @@
 (defmulti repl-item (fn [item opts] (:type item)))
 
 (defmethod repl-item :input
-  [{:keys [num text]} _]
+  [{:keys [num text]} opts]
   [view {:style [:repl-item :input-item]}
    [view {:style [:caret :input-caret]} "[" num "]>"]
-   [view :input-text
+   [view {:style :input-text
+          :on-click (partial (:set-text opts) text)}
     [code-mirror/colored-text text]]])
 
 (defmethod repl-item :log

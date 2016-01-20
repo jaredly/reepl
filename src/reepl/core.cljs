@@ -220,7 +220,8 @@
                    js-cm-opts
                    on-cm-init]}]
       [view :container
-       [repl-items @items show-value-opts]
+       [repl-items @items (assoc show-value-opts
+                                 :set-text set-text)]
        [repl-input
         (subs/current-text state)
         submit
