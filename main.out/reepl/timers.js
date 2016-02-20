@@ -31,10 +31,10 @@ return state;
 }
 }
 });
-reepl.timers.check_ival = (function reepl$timers$check_ival(state,p__19713){
-var vec__19715 = p__19713;
-var name = cljs.core.nth.call(null,vec__19715,(0),null);
-var timer = cljs.core.nth.call(null,vec__19715,(1),null);
+reepl.timers.check_ival = (function reepl$timers$check_ival(state,p__19959){
+var vec__19961 = p__19959;
+var name = cljs.core.nth.call(null,vec__19961,(0),null);
+var timer = cljs.core.nth.call(null,vec__19961,(1),null);
 if(cljs.core.not.call(null,reepl.timers.timer_ready.call(null,timer))){
 return state;
 } else {
@@ -64,7 +64,7 @@ reepl.timers.update_fn = (function reepl$timers$update_fn(orig,state){
 return reepl.timers.update_ivals.call(null,reepl.timers.update_timers.call(null,orig.call(null,state)));
 });
 reepl.timers.middleware = (function reepl$timers$middleware(options){
-return cljs.core.assoc.call(null,options,new cljs.core.Keyword(null,"update","update",1045576396),(function (p1__19716_SHARP_){
-return reepl.timers.update_fn.call(null,new cljs.core.Keyword(null,"update","update",1045576396).cljs$core$IFn$_invoke$arity$1(options),p1__19716_SHARP_);
+return cljs.core.assoc.call(null,options,new cljs.core.Keyword(null,"update","update",1045576396),(function (p1__19962_SHARP_){
+return reepl.timers.update_fn.call(null,new cljs.core.Keyword(null,"update","update",1045576396).cljs$core$IFn$_invoke$arity$1(options),p1__19962_SHARP_);
 }));
 });

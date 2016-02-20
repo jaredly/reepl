@@ -28,15 +28,15 @@ if(cljs.core.empty_QMARK_.call(null,shower_list)){
 throw (new Error([cljs.core.str("No shower for value "),cljs.core.str(val)].join('')));
 } else {
 var res = cljs.core.first.call(null,shower_list).call(null,val,config,((function (shower_list){
-return (function (p1__16835_SHARP_,p2__16836_SHARP_){
-return reepl$show_value$show_value_.call(null,p1__16835_SHARP_,p2__16836_SHARP_,showers);
+return (function (p1__16461_SHARP_,p2__16462_SHARP_){
+return reepl$show_value$show_value_.call(null,p1__16461_SHARP_,p2__16462_SHARP_,showers);
 });})(shower_list))
 );
 if(cljs.core.truth_(res)){
 return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [reepl.show_value.view,new cljs.core.Keyword(null,"inline-value","inline-value",-1653809558),res], null);
 } else {
-var G__16837 = cljs.core.rest.call(null,shower_list);
-shower_list = G__16837;
+var G__16463 = cljs.core.rest.call(null,shower_list);
+shower_list = G__16463;
 continue;
 }
 }

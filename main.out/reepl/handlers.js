@@ -29,7 +29,7 @@ reepl.handlers.set_text = (function reepl$handlers$set_text(db,text){
 var history = new cljs.core.Keyword(null,"history","history",-247395220).cljs$core$IFn$_invoke$arity$1(db);
 var pos = new cljs.core.Keyword(null,"hist-pos","hist-pos",64251178).cljs$core$IFn$_invoke$arity$1(db);
 var idx = ((cljs.core.count.call(null,history) - pos) - (1));
-return cljs.core.assoc.call(null,cljs.core.assoc.call(null,db,new cljs.core.Keyword(null,"hist-pos","hist-pos",64251178),(0)),new cljs.core.Keyword(null,"history","history",-247395220),((cljs.core._EQ_.call(null,pos,(0)))?cljs.core.assoc.call(null,history,idx,text):cljs.core.conj.call(null,history,text)));
+return cljs.core.assoc.call(null,cljs.core.assoc.call(null,db,new cljs.core.Keyword(null,"hist-pos","hist-pos",64251178),(0)),new cljs.core.Keyword(null,"history","history",-247395220),((cljs.core._EQ_.call(null,pos,(0)))?cljs.core.assoc.call(null,history,idx,text):((cljs.core._EQ_.call(null,"",cljs.core.last.call(null,history)))?cljs.core.assoc.call(null,history,(cljs.core.count.call(null,history) - (1)),text):cljs.core.conj.call(null,history,text))));
 });
 reepl.handlers.go_up = (function reepl$handlers$go_up(db){
 var pos = new cljs.core.Keyword(null,"hist-pos","hist-pos",64251178).cljs$core$IFn$_invoke$arity$1(db);

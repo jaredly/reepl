@@ -15,7 +15,8 @@
             [replumb.doc-maps :as docs]
             [replumb.load :as load]
             [replumb.browser :as browser]
-            [replumb.nodejs :as nodejs]))
+            [replumb.nodejs :as nodejs]
+            [replumb.cache :as cache]))
 
 ;;;;;;;;;;;;;
 ;;; State ;;;
@@ -108,6 +109,36 @@
   [form]
   (and (seq? form) (replumb-repl-special-set (first form))))
 
+(defn make-js-eval-fn
+  "Makes an eval function that will be used to eval JavaScript code. It returns
+  a cljs.js-compatible *eval-fn*. Expects a map of user options, specifically:
+
+  * :cache - a map containing an optional :path key which indicates the path
+  in which write the cached files. If not empty, the function will first write
+  the cached files and then eval the source, otherwise only the latter
+  * write-file-fn! - a synchronous 2-arity function which expects the path and
+  data to write."
+  [opts]
+  (fn [{:keys [path name source cache]}]
+    (let [verbose (:verbose opts)
+          write-file-fn! (:write-file-fn! opts)
+          cache-path (get-in opts [:cache :path])]
+      (when (and path source cache cache-path)
+        (if write-file-fn!
+          (let [cache-prefix-for-path (cache/cache-prefix-for-path cache-path
+                                                                   path
+                                                                   (cache/is-macros? cache))
+                [js-path json-path] (map #(str cache-prefix-for-path  %) [".js" ".cache.json"])]
+            (when verbose
+              (common/debug-prn "Attempting to write" js-path "..."))
+            (write-file-fn! js-path (str (cache/compiled-by-string) "\n" source))
+            (when verbose
+              (common/debug-prn "Attempting to write" json-path "..."))
+            (write-file-fn! json-path (cache/cljs->transit-json cache)))
+          (when verbose
+            (common/debug-prn "Invalid :write-file-fn!. No cache will be written."))))
+      (js/eval source))))
+
 (defn base-eval-opts!
   "Gets the base set of evaluation options. The 1-arity function
   specifies opts that override default. No check here if opts are
@@ -116,11 +147,11 @@
    (base-eval-opts! {}))
   ([opts]
    {:ns (:current-ns @app-env)
-    :context :expr
+    :context (or (:context opts) :expr)
     :source-map false
     :def-emits-var true
     :load (:load-fn! opts)
-    :eval cljs/js-eval
+    :eval (make-js-eval-fn opts)
     :verbose (or (:verbose opts) false)
     :static-fns false}))
 
@@ -199,30 +230,66 @@
                    provide provides]
                [(symbol provide) (str "goog/" (second (re-find #"(.*)\.js$" path)))]))))
 
+(defn file-path-from-goog-dependencies
+  "Retrives the path for a file from (.-dependencies_.nameToPath js/goog). If
+  not found will returns nil."
+  [name]
+  (when-let [path (aget (.-dependencies_.nameToPath js/goog) (str name))]
+    (->> path
+         (drop 3)      ; strip "../" because the path is relative to the goog folder
+         (drop-last 3) ; strip ".js" because the path already contains the js (which will be added later)
+         (apply str))))
+
+(defn file-path-from-foreign-libs
+  "Retrieves the path for a file from the user provided :foreign-libs option.
+  If not found, returns nil."
+  [name foreign-libs]
+  (when-let [foreign-libs (seq (filter #(= name (first (:provides %))) foreign-libs))]
+    (->> foreign-libs first :file (drop-last 3) (apply str))))
+
 (defn make-load-fn
   "Makes a load function that will read from a sequence of src-paths
   using a supplied read-file-fn!. It returns a cljs.js-compatible
-  *load-fn*.
+  *load-fn*. Both src-paths and read-file-fn! are values in the options map
+  passed as parameter.
 
   Read-file-fn! is an async 2-arity function with signature [file-path
   src-cb] where src-cb is itself a function (fn [source] ...) that needs
-  to be called with the full source of the library (as string)."
-  [verbose? src-paths read-file-fn!]
+  to be called with the full source of the library (as string).
+
+  If additionally the user map contains the :cache map the loading process
+  will consider cached files as follow: if :path is present, it will try to load
+  the cached files from the given path. If :src-paths-lookup? is present, it
+  will try to load the cached files from src-paths."
+  [{:keys [verbose src-paths read-file-fn! cache foreign-libs :as user-opts]}]
   (if (and read-file-fn! (sequential? src-paths) (every? string? src-paths))
     (fn [{:keys [name macros path] :as load-map} cb]
       (cond
-        (load/skip-load? load-map) (load/fake-load-fn! load-map cb)
-        (re-matches #"^goog/.*" path) (if-let [goog-path (get-goog-path name)]
-                                        (load/read-files-and-callback! verbose?
-                                                                       (load/file-paths-for-closure src-paths goog-path)
-                                                                       read-file-fn!
-                                                                       cb)
-                                        (cb nil))
-        :else (load/read-files-and-callback! verbose?
-                                             (load/file-paths-for-load-fn src-paths macros path)
-                                             read-file-fn!
-                                             cb)))
-    (do (when verbose?
+       (load/skip-load? load-map) (load/fake-load-fn! load-map cb)
+       (re-matches #"^goog/.*" path) (if-let [goog-path (get-goog-path name)]
+                                       (load/read-files-and-callback! verbose
+                                                                      (load/file-paths-for-closure src-paths goog-path)
+                                                                      read-file-fn!
+                                                                      cb)
+                                       (cb nil))
+       ;; first we check if we can retrieve the path from (.-dependencies_.nameToPath js/goog)
+       ;; (it's the case when the "js" file is in the compilation set)
+       ;; then also check in the user provided :foreign-libs option (for libraries not known
+       ;; at compile time - we need to indicate the ns->file mapping)
+       :else (let [path (or (file-path-from-goog-dependencies (str name))
+                            (file-path-from-foreign-libs (str name) foreign-libs)
+                            path)
+                   args [verbose (load/file-paths-for-load-fn src-paths macros path) read-file-fn! cb]
+                   cache-path (:path cache)
+                   src-paths-lookup? (:src-paths-lookup? cache)]
+               (if (or cache-path src-paths-lookup?)
+                 (let [cache-paths (cond-> []
+                                           cache-path (into [cache-path])
+                                           src-paths-lookup? (into src-paths))
+                       cached-file-paths (load/cache-file-paths-for-load-fn cache-paths macros path)]
+                   (apply load/read-files-from-cache-and-callback! (conj args cached-file-paths)))
+                 (apply load/read-files-and-callback! args)))))
+    (do (when verbose
           (common/debug-prn "Invalid :read-file-fn! or :src-paths (is it sequential? Are all paths strings?). No *load-fn* will be passed to cljs.js."))
         ;; AR - by returning nil we force a "No *load-fn* set" in cljs.js
         nil)))
@@ -234,7 +301,9 @@
 (def valid-opts-set
   "Set of valid option used for external input validation."
   #{:verbose :warning-as-error :target :init-fn!
-    :no-pr-str-on-value :load-fn! :read-file-fn! :src-paths})
+    :no-pr-str-on-value :load-fn! :read-file-fn!
+    :write-file-fn! :src-paths :cache :context
+    :foreign-libs})
 
 (defn valid-opts
   "Validate the input user options. Returns a new map without invalid
@@ -258,10 +327,8 @@
   [opts user-opts]
   (assoc opts :load-fn!
          (or (:load-fn! user-opts)
-             ;; AR - make-load-fn will validate :src-paths/:read-file-fn!
-             (make-load-fn (:verbose user-opts)
-                           (:src-paths user-opts)
-                           (:read-file-fn! user-opts)))))
+             ;; AR - load-fn will validate :src-paths/:read-file-fn!
+             (make-load-fn user-opts))))
 
 (defn add-init-fns
   "Given current and user options, returns a map containing a
@@ -498,6 +565,12 @@
                                  (common/wrap-error error)
                                  (common/wrap-success nil))))))))
 
+(defn doc-map-special-symbols
+  [sym]
+  (get '{&       fn
+         catch   try
+         finally try} sym sym))
+
 (defn process-doc
   [opts cb data sym]
   (call-back! (merge opts {:no-pr-str-on-value true})
@@ -505,11 +578,12 @@
               data
               (common/wrap-success
                (with-out-str
-                 (cond
-                   (docs/special-doc-map sym) (repl/print-doc (docs/special-doc sym))
-                   (docs/repl-special-doc-map sym) (repl/print-doc (docs/repl-special-doc sym))
-                   (ast/namespace @st sym) (repl/print-doc (select-keys (ast/namespace @st sym) [:name :doc]))
-                   :else (repl/print-doc (get-var opts (empty-analyzer-env) sym)))))))
+                 (let [sym (doc-map-special-symbols sym)]
+                   (cond
+                     (docs/special-doc-map sym) (repl/print-doc (docs/special-doc sym))
+                     (docs/repl-special-doc-map sym) (repl/print-doc (docs/repl-special-doc sym))
+                     (ast/namespace @st sym) (repl/print-doc (select-keys (ast/namespace @st sym) [:name :doc]))
+                     :else (repl/print-doc (get-var opts (empty-analyzer-env) sym))))))))
 
 (defn process-pst
   [opts cb data expr]
@@ -827,9 +901,24 @@
   file is found). It is mutually exclusive with :load-fn! and will be
   ignored in case both are present
 
+  * `:write-file-fn!` a synchronous 2-arity function with signature
+  `[file-path data]` that accepts a file-path and data to write.
+
   * :src-paths - a vector of paths containing source files
+
+  * :cache - a map containing two optional values: the first, :path, indicates
+  the path of the cached files. The second, :src-paths-lookup?, indicates
+  if look for cached files in :src-paths. If both present, `:path` will have
+  the priority but both will be inspected.
+
   * :no-pr-str-on-value - in case of :success? avoid converting the
   result map :value to string
+
+  * :context - indicates the evaluation context that will be passed to
+  cljs/eval-str. Defaults to :expr.
+
+  * `:foreign-libs` - a way to include foreign libraries. The format is analogous
+  to the compiler option. For more info visit https://github.com/clojure/clojurescript/wiki/Compiler-Options#foreign-libs
 
   The second parameter cb, is a 1-arity function which receives the
   result map.

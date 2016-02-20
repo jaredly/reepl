@@ -21,23 +21,23 @@ return cljs.core.tree_seq.call(null,replumb.common.error_branch_QMARK_,replumb.c
  *   ** Be sure to pass a js/Error object here **
  */
 replumb.common.extract_message = (function replumb$common$extract_message(var_args){
-var args17813 = [];
-var len__7511__auto___17817 = arguments.length;
-var i__7512__auto___17818 = (0);
+var args18497 = [];
+var len__7511__auto___18501 = arguments.length;
+var i__7512__auto___18502 = (0);
 while(true){
-if((i__7512__auto___17818 < len__7511__auto___17817)){
-args17813.push((arguments[i__7512__auto___17818]));
+if((i__7512__auto___18502 < len__7511__auto___18501)){
+args18497.push((arguments[i__7512__auto___18502]));
 
-var G__17819 = (i__7512__auto___17818 + (1));
-i__7512__auto___17818 = G__17819;
+var G__18503 = (i__7512__auto___18502 + (1));
+i__7512__auto___18502 = G__18503;
 continue;
 } else {
 }
 break;
 }
 
-var G__17815 = args17813.length;
-switch (G__17815) {
+var G__18499 = args18497.length;
+switch (G__18499) {
 case 1:
 return replumb.common.extract_message.cljs$core$IFn$_invoke$arity$1((arguments[(0)]));
 
@@ -51,7 +51,7 @@ return replumb.common.extract_message.cljs$core$IFn$_invoke$arity$3((arguments[(
 
 break;
 default:
-throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args17813.length)].join('')));
+throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args18497.length)].join('')));
 
 }
 });
@@ -65,21 +65,21 @@ return replumb.common.extract_message.call(null,err,exclude_error_msg_QMARK_,fal
 });
 
 replumb.common.extract_message.cljs$core$IFn$_invoke$arity$3 = (function (err,exclude_error_msg_QMARK_,print_stack_QMARK_){
-return [cljs.core.str((function (){var strings = (function (){var G__17816 = cljs.core.keep.call(null,cljs.core.identity,replumb.common.error_seq.call(null,err));
-var G__17816__$1 = (cljs.core.truth_(exclude_error_msg_QMARK_)?cljs.core.filter.call(null,((function (G__17816){
-return (function (p1__17811_SHARP_){
-return cljs.core.not_EQ_.call(null,"ERROR",p1__17811_SHARP_.message);
-});})(G__17816))
-,G__17816):G__17816);
-var G__17816__$2 = cljs.core.map.call(null,((function (G__17816,G__17816__$1){
-return (function (p1__17812_SHARP_){
-return p1__17812_SHARP_.message;
-});})(G__17816,G__17816__$1))
-,G__17816__$1)
+return [cljs.core.str((function (){var strings = (function (){var G__18500 = cljs.core.keep.call(null,cljs.core.identity,replumb.common.error_seq.call(null,err));
+var G__18500__$1 = (cljs.core.truth_(exclude_error_msg_QMARK_)?cljs.core.filter.call(null,((function (G__18500){
+return (function (p1__18495_SHARP_){
+return cljs.core.not_EQ_.call(null,"ERROR",p1__18495_SHARP_.message);
+});})(G__18500))
+,G__18500):G__18500);
+var G__18500__$2 = cljs.core.map.call(null,((function (G__18500,G__18500__$1){
+return (function (p1__18496_SHARP_){
+return p1__18496_SHARP_.message;
+});})(G__18500,G__18500__$1))
+,G__18500__$1)
 ;
-var G__17816__$3 = cljs.core.filter.call(null,cljs.core.complement.call(null,cljs.core.empty_QMARK_),G__17816__$2)
+var G__18500__$3 = cljs.core.filter.call(null,cljs.core.complement.call(null,cljs.core.empty_QMARK_),G__18500__$2)
 ;
-return G__17816__$3;
+return G__18500__$3;
 })();
 if(cljs.core.seq.call(null,strings)){
 return clojure.string.join.call(null," - ",strings);
@@ -121,23 +121,23 @@ return cljs.core.re_matches.call(null,/\\{2,}n|\\{2,}r/,s);
  * Is the string returned from an evaluation valid?
  */
 replumb.common.valid_eval_result_QMARK_ = (function replumb$common$valid_eval_result_QMARK_(var_args){
-var args17821 = [];
-var len__7511__auto___17824 = arguments.length;
-var i__7512__auto___17825 = (0);
+var args18505 = [];
+var len__7511__auto___18508 = arguments.length;
+var i__7512__auto___18509 = (0);
 while(true){
-if((i__7512__auto___17825 < len__7511__auto___17824)){
-args17821.push((arguments[i__7512__auto___17825]));
+if((i__7512__auto___18509 < len__7511__auto___18508)){
+args18505.push((arguments[i__7512__auto___18509]));
 
-var G__17826 = (i__7512__auto___17825 + (1));
-i__7512__auto___17825 = G__17826;
+var G__18510 = (i__7512__auto___18509 + (1));
+i__7512__auto___18509 = G__18510;
 continue;
 } else {
 }
 break;
 }
 
-var G__17823 = args17821.length;
-switch (G__17823) {
+var G__18507 = args18505.length;
+switch (G__18507) {
 case 1:
 return replumb.common.valid_eval_result_QMARK_.cljs$core$IFn$_invoke$arity$1((arguments[(0)]));
 
@@ -147,7 +147,7 @@ return replumb.common.valid_eval_result_QMARK_.cljs$core$IFn$_invoke$arity$2((ar
 
 break;
 default:
-throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args17821.length)].join('')));
+throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args18505.length)].join('')));
 
 }
 });
@@ -184,9 +184,9 @@ replumb.common.valid_eval_warning_QMARK_ = (function replumb$common$valid_eval_w
 return typeof warning === 'string';
 });
 replumb.common.has_valid_warning_QMARK_ = (function replumb$common$has_valid_warning_QMARK_(result){
-var G__17829 = new cljs.core.Keyword(null,"warning","warning",-1685650671).cljs$core$IFn$_invoke$arity$1(result);
-var G__17829__$1 = (((G__17829 == null))?null:replumb.common.valid_eval_warning_QMARK_.call(null,G__17829));
-return G__17829__$1;
+var G__18513 = new cljs.core.Keyword(null,"warning","warning",-1685650671).cljs$core$IFn$_invoke$arity$1(result);
+var G__18513__$1 = (((G__18513 == null))?null:replumb.common.valid_eval_warning_QMARK_.call(null,G__18513));
+return G__18513__$1;
 });
 /**
  * Yields a "keyword not supported" error map. Receives the
@@ -211,23 +211,23 @@ if(cljs.core.map_QMARK_.call(null,opts)){
 throw (new Error([cljs.core.str("Assert failed: "),cljs.core.str(cljs.core.pr_str.call(null,cljs.core.list(new cljs.core.Symbol(null,"map?","map?",-1780568534,null),new cljs.core.Symbol(null,"opts","opts",1795607228,null))))].join('')));
 }
 
-var new_fn_entries = cljs.core.map.call(null,(function (p1__17830_SHARP_){
-return cljs.core.assoc.call(null,p1__17830_SHARP_,(1),"<hidden function>");
-}),cljs.core.filter.call(null,(function (p1__17831_SHARP_){
-return cljs.core.re_find.call(null,/-fn/,cljs.core.name.call(null,cljs.core.first.call(null,p1__17831_SHARP_)));
+var new_fn_entries = cljs.core.map.call(null,(function (p1__18514_SHARP_){
+return cljs.core.assoc.call(null,p1__18514_SHARP_,(1),"<hidden function>");
+}),cljs.core.filter.call(null,(function (p1__18515_SHARP_){
+return cljs.core.re_find.call(null,/-fn/,cljs.core.name.call(null,cljs.core.first.call(null,p1__18515_SHARP_)));
 }),cljs.core.into.call(null,cljs.core.PersistentVector.EMPTY,opts)));
 return cljs.core.into.call(null,opts,new_fn_entries);
 });
 replumb.common.debug_prn = (function replumb$common$debug_prn(var_args){
 var args__7518__auto__ = [];
-var len__7511__auto___17834 = arguments.length;
-var i__7512__auto___17835 = (0);
+var len__7511__auto___18518 = arguments.length;
+var i__7512__auto___18519 = (0);
 while(true){
-if((i__7512__auto___17835 < len__7511__auto___17834)){
-args__7518__auto__.push((arguments[i__7512__auto___17835]));
+if((i__7512__auto___18519 < len__7511__auto___18518)){
+args__7518__auto__.push((arguments[i__7512__auto___18519]));
 
-var G__17836 = (i__7512__auto___17835 + (1));
-i__7512__auto___17835 = G__17836;
+var G__18520 = (i__7512__auto___18519 + (1));
+i__7512__auto___18519 = G__18520;
 continue;
 } else {
 }
@@ -239,17 +239,17 @@ return replumb.common.debug_prn.cljs$core$IFn$_invoke$arity$variadic(argseq__751
 });
 
 replumb.common.debug_prn.cljs$core$IFn$_invoke$arity$variadic = (function (args){
-var _STAR_print_fn_STAR_17833 = cljs.core._STAR_print_fn_STAR_;
+var _STAR_print_fn_STAR_18517 = cljs.core._STAR_print_fn_STAR_;
 cljs.core._STAR_print_fn_STAR_ = cljs.core._STAR_print_err_fn_STAR_;
 
 try{return cljs.core.apply.call(null,cljs.core.println,args);
-}finally {cljs.core._STAR_print_fn_STAR_ = _STAR_print_fn_STAR_17833;
+}finally {cljs.core._STAR_print_fn_STAR_ = _STAR_print_fn_STAR_18517;
 }});
 
 replumb.common.debug_prn.cljs$lang$maxFixedArity = (0);
 
-replumb.common.debug_prn.cljs$lang$applyTo = (function (seq17832){
-return replumb.common.debug_prn.cljs$core$IFn$_invoke$arity$variadic(cljs.core.seq.call(null,seq17832));
+replumb.common.debug_prn.cljs$lang$applyTo = (function (seq18516){
+return replumb.common.debug_prn.cljs$core$IFn$_invoke$arity$variadic(cljs.core.seq.call(null,seq18516));
 });
 /**
  * Adds a / if missing at the end of the path.
