@@ -5,7 +5,7 @@
   '[
     [adzerk/boot-cljs            "1.7.48-5"       :scope "test"]
     [adzerk/boot-cljs-repl       "0.3.0"           :scope "test"]
-    [adzerk/boot-reload          "0.4.9"           :scope "test" :exclusions [template] ]
+    [adzerk/boot-reload          "0.4.9"           :scope "test"]
     [pandeiro/boot-http          "0.6.3"           :scope "test"]
     [crisptrutski/boot-cljs-test "0.2.1"  :scope "test"]
     [zilti/boot-typed "0.1.1" :scope "test"]
