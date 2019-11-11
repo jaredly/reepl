@@ -35,7 +35,7 @@
   '[adzerk.bootlaces :refer :all]
   '[adzerk.boot-cljs      :refer [cljs]]
   '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
-  '[adzerk.boot-reload :as br]
+  '[adzerk.boot-reload	  :refer [reload]]
   '[crisptrutski.boot-cljs-test  :refer [test-cljs]]
   '[pandeiro.boot-http    :refer [serve]])
 
@@ -84,7 +84,7 @@
    (serve :dir "target" :port 3002)
    (watch)
    ;;(speak)
-   (br/reload :on-jsload 'reepl.example/main)
+   (reload :on-jsload 'reepl.example/main)
    (cljs-repl)
    (cljs :source-map true
          :compiler-options {:foreign-libs foreign-libs}
