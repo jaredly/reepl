@@ -3,9 +3,9 @@
   :resource-paths #{"html"}
   :dependencies
   '[
-    [adzerk/boot-cljs            "1.7.228-1"       :scope "test"]
+    [adzerk/boot-cljs            "1.7.48-5"       :scope "test"]
     [adzerk/boot-cljs-repl       "0.3.0"           :scope "test"]
-    [adzerk/boot-reload          "0.4.4"           :scope "test"]
+    [adzerk/boot-reload          "0.4.9"           :scope "test"]
     [pandeiro/boot-http          "0.6.3"           :scope "test"]
     [crisptrutski/boot-cljs-test "0.2.1"  :scope "test"]
     [zilti/boot-typed "0.1.1" :scope "test"]
@@ -26,16 +26,16 @@
     [weasel                  "0.7.0"  :scope "test"]
     [org.clojure/tools.nrepl "0.2.12" :scope "test"]
 
-    [org.clojure/clojure         "1.7.0"]
+    [org.clojure/clojure         "1.8.0"]
     [org.clojure/core.typed "0.3.18"]
-    [org.clojure/clojurescript   "1.7.228"]
+    [org.clojure/clojurescript   "1.9.14"]
     ])
 
 (require
   '[adzerk.bootlaces :refer :all]
   '[adzerk.boot-cljs      :refer [cljs]]
   '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
-  '[adzerk.boot-reload    :refer [reload]]
+  '[adzerk.boot-reload	  :refer [reload]]
   '[crisptrutski.boot-cljs-test  :refer [test-cljs]]
   '[pandeiro.boot-http    :refer [serve]])
 
